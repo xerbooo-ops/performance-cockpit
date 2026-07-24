@@ -1,4 +1,4 @@
-Performance Cockpit v1.0.3 – Windows
+Performance Cockpit v1.0.4 – Windows
 
 Start:
 1. ZIP-Datei vollständig entpacken.
@@ -10,6 +10,11 @@ Internetzugang noch Docker, eine separate Python-Installation, Node.js, TypeScri
 
 Daten:
 - CSV- oder XLSX-Datei über „Daten importieren“ auswählen.
+- Für automatische Aktualisierungen einmal „Reportdatei auswählen“ anklicken und die lokale
+  Reportdatei im Windows-Dialog festlegen.
+- Änderungen dieser Datei werden danach alle fünf Sekunden geprüft und automatisch importiert.
+- Die Auswahl bleibt nach einem Neustart gespeichert; über „Überwachung beenden“ kann sie
+  zurückgesetzt werden.
 - Im Performance-Report werden Teamleiter- und Mitarbeiternamen ignoriert und nicht gespeichert.
 - Die Auswahl erfolgt ausschließlich über EPA; „Potsdam“ enthält die kumulierten Gesamtwerte.
 - Zielwerte werden im Dashboard und PDF-Bericht zunächst nicht angezeigt.

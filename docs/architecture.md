@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 1.0.3. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
+Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 1.0.4. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
 
 ## Architekturüberblick
 
@@ -31,6 +31,7 @@ flowchart LR
 | SQLite | Eingebettete lokale Speicherung ohne separaten Datenbankdienst |
 | SQLAlchemy und Alembic | Datenmodell, Datenzugriff und versionierte Migrationen |
 | PyInstaller | Bündelung der Python-Anwendung und Laufzeit als Windows-EXE |
+| Datei-Wächter | Prüft die ausgewählte lokale CSV-/XLSX-Datei und importiert Änderungen |
 | Docker Compose | Optionale reproduzierbare Entwicklungsumgebung |
 | GitHub Actions | Linting, Tests, Containerprüfung und Windows-Standalone-Build |
 
@@ -76,6 +77,8 @@ Die Continuous-Integration-Pipeline führt diese Prüfungen für Pull Requests u
 
 - Die Anwendung bindet nur an `127.0.0.1` und ist nicht aus dem Netzwerk erreichbar.
 - Die HTML-Oberfläche wird direkt vom lokalen FastAPI-Prozess erzeugt.
+- Der lokale Datei-Wächter prüft die gespeicherte Reportquelle standardmäßig alle fünf Sekunden.
+- Der Browser aktualisiert dieselbe Dashboard-URL über HTML-Metadaten alle zehn Sekunden.
 - Die Oberfläche öffnet sich beim Start automatisch im Standardbrowser.
 - Daten liegen unter `%LOCALAPPDATA%\PerformanceCockpit`.
 - Zur Laufzeit werden keine externen Dienste oder Internetressourcen aufgerufen.

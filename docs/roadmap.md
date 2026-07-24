@@ -118,6 +118,16 @@ Windows-10-/11-Systemen und – sobald ein Zertifikat vorliegt – die digitale 
 - Standalone-Paket ausschließlich mit Python und PyInstaller erzeugen
 - Statische GitHub-Pages-Projektseite per Python generieren
 
+## Release 1.0.4 – Automatische Dateiaktualisierung
+
+**Status:** abgeschlossen
+
+- Lokale CSV-/XLSX-Reportdatei einmalig über einen nativen Dialog auswählen
+- Dateipfad und letzter erfolgreicher Stand lokal und dauerhaft speichern
+- Änderungen alle fünf Sekunden erkennen und idempotent importieren
+- Ungültige Zwischenstände nicht übernehmen und automatisch erneut prüfen
+- Dashboard alle zehn Sekunden ohne JavaScript aktualisieren
+
 ## Übergreifende Leitlinien
 
 Für jedes Release gelten:

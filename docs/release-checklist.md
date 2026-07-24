@@ -6,6 +6,7 @@
 - Portable EXE startet und beantwortet den Health-Check
 - Windows-Installer wird erzeugt und enthält EXE, Hilfe und Beispieldaten
 - Import, Filter, Drilldown, XLSX/PDF-Export, Backup und Wiederherstellung geprüft
+- Datei-Wächter erkennt Änderungen, aktualisiert Messwerte und übersteht einen Neustart
 - Anwendung bindet ausschließlich an `127.0.0.1`
 - Keine externen URLs, APIs, Fonts, Skripte oder Telemetriedienste
 - Upgrade einer bestehenden lokalen Datenbank geprüft

@@ -42,17 +42,21 @@ jobs:
               }
             }
             if (-not $healthy) { throw "Standalone health check failed" }
+            $dashboard = Invoke-WebRequest "http://127.0.0.1:8765/"
+            if ($dashboard.Content -notmatch "Reportdatei auswählen") {
+              throw "Automatic file-watch interface is missing"
+            }
           } finally {
             Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
           }
       - name: Package release
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0.3" -Force
-          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0.3/"
-          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0.3/"
-          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0.3/README.txt"
-          Compress-Archive -Path "release/PerformanceCockpit_v1.0.3" -DestinationPath "release/PerformanceCockpit_v1.0.3_Windows.zip"
+          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0.4" -Force
+          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0.4/"
+          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0.4/"
+          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0.4/README.txt"
+          Compress-Archive -Path "release/PerformanceCockpit_v1.0.4" -DestinationPath "release/PerformanceCockpit_v1.0.4_Windows.zip"
       - name: Build installer
         shell: pwsh
         run: |
@@ -63,8 +67,8 @@ jobs:
           & $iscc "scripts/windows-installer.iss"
       - uses: actions/upload-artifact@v4
         with:
-          name: PerformanceCockpit-v1.0.3-Windows
+          name: PerformanceCockpit-v1.0.4-Windows
           path: |
-            release/PerformanceCockpit_v1.0.3_Windows.zip
-            release/PerformanceCockpit_v1.0.3_Setup.exe
+            release/PerformanceCockpit_v1.0.4_Windows.zip
+            release/PerformanceCockpit_v1.0.4_Setup.exe
           if-no-files-found: error

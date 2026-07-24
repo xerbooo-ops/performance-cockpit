@@ -3,6 +3,8 @@ from io import BytesIO
 from fastapi.testclient import TestClient
 from openpyxl import Workbook
 
+from performance_cockpit import web
+
 
 def test_python_dashboard_renders_without_frontend_build(client: TestClient) -> None:
     response = client.get("/")
@@ -12,6 +14,9 @@ def test_python_dashboard_renders_without_frontend_build(client: TestClient) -> 
     assert "Python-only" in response.text
     assert "TypeScript" in response.text
     assert 'action="/web/import"' in response.text
+    assert 'http-equiv="refresh"' in response.text
+    assert "Reportdatei auswählen" in response.text
+    assert "alle 5 Sekunden geprüft" in response.text
 
 
 def test_python_dashboard_imports_and_filters_by_epa(client: TestClient) -> None:
@@ -59,3 +64,25 @@ def test_python_dashboard_reset_requires_delete(client: TestClient) -> None:
 
     assert "Bestätigung war nicht DELETE" in rejected.text
     assert "Alle lokalen Daten wurden gelöscht" in accepted.text
+
+
+def test_python_dashboard_selects_a_file_for_automatic_updates(
+    client: TestClient,
+    monkeypatch,
+    tmp_path,
+) -> None:
+    report_path = tmp_path / "report.xlsx"
+    report_path.touch()
+    selected_paths = []
+    monkeypatch.setattr(web, "select_report_file", lambda: report_path)
+    monkeypatch.setattr(
+        client.app.state.file_watcher,
+        "select_file",
+        lambda path: selected_paths.append(path) or True,
+    )
+
+    response = client.post("/web/watch/select", follow_redirects=True)
+
+    assert response.status_code == 200
+    assert "report.xlsx wird jetzt automatisch überwacht" in response.text
+    assert selected_paths == [report_path]

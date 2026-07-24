@@ -52,6 +52,17 @@ verwendet. Ein oberhalb der Tabelle angegebener Monatsverlauf für AHT und ACW w
 In der lokalen Windows-Anwendung oben rechts „Daten importieren“ wählen und eine CSV- oder
 XLSX-Datei öffnen. Das Cockpit lädt die Kennzahlen nach einem erfolgreichen Import automatisch neu.
 
+## Automatische Aktualisierung
+
+Unter „Automatische Aktualisierung“ einmal „Reportdatei auswählen“ anklicken und die lokale CSV-
+oder XLSX-Datei im Windows-Dialog festlegen. Die Anwendung speichert ausschließlich den lokalen
+Dateipfad und den technischen Änderungsstand. Sie prüft die Datei alle fünf Sekunden und importiert
+geänderte Werte automatisch. Ein erneuter Upload ist nicht erforderlich.
+
+Während Excel eine Datei schreibt, kann sie vorübergehend unvollständig sein. Solche Zustände werden
+nicht übernommen und beim nächsten Intervall erneut geprüft. Das Dashboard lädt dieselbe Ansicht
+alle zehn Sekunden neu. Über „Überwachung beenden“ wird die gespeicherte Auswahl entfernt.
+
 ## Import über API
 
 ```bash

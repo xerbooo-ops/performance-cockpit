@@ -19,6 +19,10 @@ def default_database_url() -> str:
     return f"sqlite+pysqlite:///{(application_data_dir() / 'performance-cockpit.db').as_posix()}"
 
 
+def default_watch_config_path() -> Path:
+    return application_data_dir() / "watched-file.json"
+
+
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
@@ -36,6 +40,9 @@ class Settings(BaseSettings):
     database_url: str = Field(default_factory=default_database_url)
     cors_origins: list[str] = Field(default_factory=list)
     migrations_dir: Path | None = None
+    watch_enabled: bool = False
+    watch_interval_seconds: float = Field(default=5, ge=1, le=3600)
+    watch_config_path: Path = Field(default_factory=default_watch_config_path)
 
 
 @lru_cache

@@ -31,6 +31,7 @@ def main() -> None:
         environment="standalone",
         migrations_dir=bundled_migrations_dir(),
         cors_origins=[],
+        watch_enabled=True,
     )
     initialize_database(settings)
     port = int(os.environ.get("PERFORMANCE_COCKPIT_PORT", available_port()))

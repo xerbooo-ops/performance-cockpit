@@ -28,6 +28,7 @@ from performance_cockpit.services.metrics import (
     get_dashboard_filters,
     measurement_query,
 )
+from performance_cockpit.watcher import FileWatchService, select_report_file
 
 router = APIRouter(include_in_schema=False)
 DatabaseSession = Annotated[Session, Depends(get_db)]
@@ -75,6 +76,7 @@ def _redirect(message: str) -> RedirectResponse:
 
 @router.get("/", response_class=HTMLResponse)
 def dashboard_page(
+    request: Request,
     session: DatabaseSession,
     organizational_unit: str = "",
     date_from: date | None = None,
@@ -82,6 +84,8 @@ def dashboard_page(
     metric_key: str = "",
     message: str = "",
 ) -> HTMLResponse:
+    watcher: FileWatchService = request.app.state.file_watcher
+    watch_state = watcher.status()
     filters = get_dashboard_filters(session)
     unit = organizational_unit or next(iter(filters.organizational_units), "")
     dashboard = get_dashboard(session, unit, date_from, date_to) if unit else None
@@ -144,9 +148,26 @@ def dashboard_page(
     }
     report_query = urlencode(query)
     notice = f'<p class="notice">{_escape(message)}</p>' if message else ""
+    watched_name = Path(watch_state.file_path).name if watch_state.file_path else ""
+    watch_status = (
+        f"Aktiv: {_escape(watched_name)}"
+        + (
+            f" · zuletzt importiert {_escape(watch_state.last_imported_at)}"
+            if watch_state.last_imported_at
+            else ""
+        )
+        if watched_name
+        else "Noch keine Datei zur automatischen Aktualisierung ausgewählt."
+    )
+    watch_error = (
+        f'<p class="notice danger">{_escape(watch_state.last_error)}</p>'
+        if watch_state.last_error
+        else ""
+    )
     content = f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport"
-content="width=device-width,initial-scale=1"><title>Performance Cockpit</title>
+content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="10">
+<title>Performance Cockpit</title>
 <style>{STYLES}</style></head><body>
 <header class="topbar"><div><strong>Performance Cockpit</strong>
 <span>Python-only · EPA-Anonymisierung</span></div>
@@ -156,6 +177,16 @@ content="width=device-width,initial-scale=1"><title>Performance Cockpit</title>
 <main><section class="hero"><span class="badge">● vollständig lokal</span>
 <h1>Leistung auf einen Blick.</h1><p>Ohne Node.js, TypeScript oder externe Dienste.</p></section>
 {notice}
+<section class="panel"><h2>Automatische Aktualisierung</h2>
+<p>{watch_status}</p>{watch_error}<div class="actions">
+<form action="/web/watch/select" method="post">
+<button type="submit">Reportdatei auswählen</button></form>
+<form action="/web/watch/check" method="post">
+<button type="submit">Jetzt prüfen</button></form>
+<form action="/web/watch/clear" method="post">
+<button class="danger" type="submit">Überwachung beenden</button></form>
+</div><p class="meta">Die lokale Datei wird alle 5 Sekunden geprüft. Das Dashboard aktualisiert
+sich alle 10 Sekunden automatisch.</p></section>
 <section class="panel"><form method="get" action="/">
 <label>Organisationseinheit<select name="organizational_unit">{unit_options}</select></label>
 <label>Von<input type="date" name="date_from" value="{date_from or ""}"></label>
@@ -189,6 +220,35 @@ content="width=device-width,initial-scale=1"><title>Performance Cockpit</title>
 </tbody></table></section>
 </main></body></html>"""
     return HTMLResponse(content)
+
+
+@router.post("/web/watch/select")
+def dashboard_watch_select(request: Request) -> RedirectResponse:
+    selected = select_report_file()
+    if selected is None:
+        return _redirect("Dateiauswahl abgebrochen.")
+    watcher: FileWatchService = request.app.state.file_watcher
+    try:
+        watcher.select_file(selected)
+    except ValueError as error:
+        return _redirect(str(error))
+    return _redirect(f"{selected.name} wird jetzt automatisch überwacht.")
+
+
+@router.post("/web/watch/check")
+def dashboard_watch_check(request: Request) -> RedirectResponse:
+    watcher: FileWatchService = request.app.state.file_watcher
+    changed = watcher.check_once()
+    return _redirect(
+        "Dateiänderung importiert." if changed else "Keine neue Dateiänderung erkannt."
+    )
+
+
+@router.post("/web/watch/clear")
+def dashboard_watch_clear(request: Request) -> RedirectResponse:
+    watcher: FileWatchService = request.app.state.file_watcher
+    watcher.clear()
+    return _redirect("Automatische Dateiüberwachung beendet.")
 
 
 @router.post("/web/import")

@@ -2,7 +2,7 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 1.0.3 ersetzt den TypeScript-Build durch eine vollständig Python-gerenderte Oberfläche.
+> **Projektstatus:** Release 1.0.4 überwacht eine ausgewählte lokale Reportdatei und importiert Änderungen automatisch.
 
 ## Öffentliche Vorschau
 
@@ -39,7 +39,7 @@ Speicherung läuft ausschließlich in der lokalen Windows-Anwendung.
 ## Windows ohne Installation
 
 Der GitHub-Actions-Workflow `Build Windows standalone` erzeugt
-`PerformanceCockpit_v1.0.3_Windows.zip` sowie `PerformanceCockpit_v1.0.3_Setup.exe`. Das portable Paket
+`PerformanceCockpit_v1.0.4_Windows.zip` sowie `PerformanceCockpit_v1.0.4_Setup.exe`. Das portable Paket
 wird entpackt; anschließend startet `PerformanceCockpit.exe` das Cockpit per Doppelklick.
 
 Zur Laufzeit werden kein Docker, keine separate Python-Installation, Node.js, TypeScript,
@@ -129,7 +129,15 @@ Anwendungsvariablen tragen das Präfix `PERFORMANCE_COCKPIT_`.
 
 ## Version
 
-Aktueller Projektstand: **1.0.3**
+Aktueller Projektstand: **1.0.4**
+
+## Kurz-Changelog 1.0.4
+
+- lokale Reportdatei einmalig über einen nativen Windows-Dateidialog auswählbar
+- Dateiänderungen werden alle fünf Sekunden erkannt und automatisch importiert
+- überwachte Datei bleibt über Anwendungsneustarts hinweg gespeichert
+- Dashboard aktualisiert sich ohne JavaScript alle zehn Sekunden automatisch
+- fehlerhafte Zwischenstände werden verworfen und erneut geprüft
 
 ## Kurz-Changelog 1.0.3
 
