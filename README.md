@@ -4,6 +4,14 @@ Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Da
 
 > **Projektstatus:** Release 0.2 stellt das technische Fundament mit React, FastAPI, PostgreSQL, Docker Compose, Tests und Continuous Integration bereit.
 
+## Öffentliche Vorschau
+
+Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages veröffentlicht:
+
+<https://xerbooo-ops.github.io/performance-cockpit/>
+
+Die Vorschau zeigt aktuell das Frontend von Release 0.2. Das Backend ist noch nicht öffentlich gehostet.
+
 ## Technischer Stack
 
 | Bereich | Technologie |
