@@ -1,5 +1,5 @@
 #define AppName "Performance Cockpit"
-#define AppVersion "1.0.2"
+#define AppVersion "1.0.3"
 #define AppPublisher "xerbooo-ops"
 #define AppExeName "PerformanceCockpit.exe"
 
@@ -13,7 +13,7 @@ DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=..\release
-OutputBaseFilename=PerformanceCockpit_v1.0.2_Setup
+OutputBaseFilename=PerformanceCockpit_v1.0.3_Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

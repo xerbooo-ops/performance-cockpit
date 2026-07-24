@@ -108,6 +108,16 @@ Windows-10-/11-Systemen und – sobald ein Zertifikat vorliegt – die digitale 
 - Anzahl-KPI summieren und Quoten-, Punkte- sowie Zeit-KPI mitteln
 - Zielangaben aus Dashboard und PDF-Bericht entfernen
 
+## Release 1.0.3 – Python-only-Workaround
+
+**Status:** abgeschlossen
+
+- Aktive React-/TypeScript-Oberfläche durch serverseitiges FastAPI-HTML ersetzen
+- Node.js, npm, Vite und TypeScript aus CI und Windows-Build entfernen
+- Filter, Import und lokale Datenverwaltung über HTML-Formulare bereitstellen
+- Standalone-Paket ausschließlich mit Python und PyInstaller erzeugen
+- Statische GitHub-Pages-Projektseite per Python generieren
+
 ## Übergreifende Leitlinien
 
 Für jedes Release gelten:

@@ -4,11 +4,11 @@ from contextlib import asynccontextmanager
 import structlog
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from performance_cockpit.api.router import api_router
 from performance_cockpit.config import Settings, get_settings
 from performance_cockpit.logging import configure_logging
+from performance_cockpit.web import router as web_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -24,7 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=resolved_settings.app_name,
-        version="1.0.2",
+        version="1.0.3",
         lifespan=lifespan,
     )
     app.state.settings = resolved_settings
@@ -36,6 +36,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(api_router, prefix=resolved_settings.api_prefix)
+    app.include_router(web_router)
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next) -> Response:
@@ -50,12 +51,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers["X-Frame-Options"] = "DENY"
         return response
 
-    if resolved_settings.frontend_dir and resolved_settings.frontend_dir.is_dir():
-        app.mount(
-            "/",
-            StaticFiles(directory=resolved_settings.frontend_dir, html=True),
-            name="frontend",
-        )
     return app
 
 

@@ -1,4 +1,4 @@
-Performance Cockpit v1.0.2 – Windows
+Performance Cockpit v1.0.3 – Windows
 
 Start:
 1. ZIP-Datei vollständig entpacken.
@@ -6,7 +6,7 @@ Start:
 3. Das Cockpit öffnet sich automatisch im Standardbrowser.
 
 Es muss nichts installiert werden. Die Anwendung läuft vollständig lokal und benötigt weder
-Internetzugang noch Docker, Python, Node.js oder PostgreSQL.
+Internetzugang noch Docker, eine separate Python-Installation, Node.js, TypeScript oder PostgreSQL.
 
 Daten:
 - CSV- oder XLSX-Datei über „Daten importieren“ auswählen.

@@ -14,16 +14,6 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - name: Build frontend
-        working-directory: frontend
-        run: |
-          npm ci --include=dev
-          npm run build
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -58,11 +48,11 @@ jobs:
       - name: Package release
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0.2" -Force
-          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0.2/"
-          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0.2/"
-          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0.2/README.txt"
-          Compress-Archive -Path "release/PerformanceCockpit_v1.0.2" -DestinationPath "release/PerformanceCockpit_v1.0.2_Windows.zip"
+          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0.3" -Force
+          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0.3/"
+          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0.3/"
+          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0.3/README.txt"
+          Compress-Archive -Path "release/PerformanceCockpit_v1.0.3" -DestinationPath "release/PerformanceCockpit_v1.0.3_Windows.zip"
       - name: Build installer
         shell: pwsh
         run: |
@@ -73,8 +63,8 @@ jobs:
           & $iscc "scripts/windows-installer.iss"
       - uses: actions/upload-artifact@v4
         with:
-          name: PerformanceCockpit-v1.0.2-Windows
+          name: PerformanceCockpit-v1.0.3-Windows
           path: |
-            release/PerformanceCockpit_v1.0.2_Windows.zip
-            release/PerformanceCockpit_v1.0.2_Setup.exe
+            release/PerformanceCockpit_v1.0.3_Windows.zip
+            release/PerformanceCockpit_v1.0.3_Setup.exe
           if-no-files-found: error

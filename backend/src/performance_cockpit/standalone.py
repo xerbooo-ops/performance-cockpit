@@ -12,12 +12,6 @@ from performance_cockpit.database import initialize_database
 from performance_cockpit.main import create_app
 
 
-def bundled_frontend_dir() -> Path:
-    bundle_path = getattr(sys, "_MEIPASS", None)
-    bundle_root = Path(bundle_path) if bundle_path else Path(__file__).resolve().parents[2]
-    return bundle_root / "frontend"
-
-
 def bundled_migrations_dir() -> Path:
     bundle_path = getattr(sys, "_MEIPASS", None)
     bundle_root = Path(bundle_path) if bundle_path else Path(__file__).resolve().parents[2]
@@ -35,7 +29,6 @@ def main() -> None:
         _env_file=None,
         app_name="Performance Cockpit",
         environment="standalone",
-        frontend_dir=bundled_frontend_dir(),
         migrations_dir=bundled_migrations_dir(),
         cors_origins=[],
     )

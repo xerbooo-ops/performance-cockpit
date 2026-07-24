@@ -1,7 +1,8 @@
 # Release-Checkliste
 
 - Backend-Tests, Ruff und Coverage-Grenze erfolgreich
-- Frontend-Tests, ESLint, Prettier, TypeScript und Produktions-Build erfolgreich
+- Python-gerenderte Oberfläche, Formulare und API-Endpunkte mit pytest geprüft
+- Actions- und Standalone-Build enthalten keine Node-, npm-, Vite- oder TypeScript-Schritte
 - Portable EXE startet und beantwortet den Health-Check
 - Windows-Installer wird erzeugt und enthält EXE, Hilfe und Beispieldaten
 - Import, Filter, Drilldown, XLSX/PDF-Export, Backup und Wiederherstellung geprüft

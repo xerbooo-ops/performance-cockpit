@@ -34,8 +34,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     api_prefix: str = "/api/v1"
     database_url: str = Field(default_factory=default_database_url)
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
-    frontend_dir: Path | None = None
+    cors_origins: list[str] = Field(default_factory=list)
     migrations_dir: Path | None = None
 
 

@@ -2,27 +2,27 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 1.0.2 anonymisiert den Performance-Report über EPA und ergänzt die kumulierte Gesamteinheit Potsdam.
+> **Projektstatus:** Release 1.0.3 ersetzt den TypeScript-Build durch eine vollständig Python-gerenderte Oberfläche.
 
 ## Öffentliche Vorschau
 
-Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages veröffentlicht:
+Eine mit Python erzeugte Projektseite wird bei Änderungen an `main` über GitHub Pages veröffentlicht:
 
 <https://xerbooo-ops.github.io/performance-cockpit/>
 
-Die Vorschau zeigt Release 1.0.2 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
-der lokalen Windows-Anwendung.
+Die Seite informiert über den Projektstand. Das produktive Dashboard einschließlich Datenimport und
+Speicherung läuft ausschließlich in der lokalen Windows-Anwendung.
 
 ## Technischer Stack
 
 | Bereich | Technologie |
 | --- | --- |
-| Frontend | React 19, TypeScript 6 und Vite 8 |
-| Backend | Python 3.12+ und FastAPI |
+| Oberfläche | Serverseitig erzeugtes HTML ohne JavaScript-Build |
+| Anwendung | Python 3.12+ und FastAPI |
 | Datenbank | SQLite (Standalone), PostgreSQL 17 (optionale Entwicklung) |
 | Datenzugriff | SQLAlchemy und Alembic |
-| Tests | Vitest, Testing Library und pytest |
-| Qualität | ESLint, Prettier und Ruff |
+| Tests | pytest und FastAPI TestClient |
+| Qualität | Ruff, pytest und Coverage |
 | Lokaler Betrieb | Portable Windows-EXE; optional Docker Compose für Entwicklung |
 | CI | GitHub Actions |
 
@@ -30,8 +30,8 @@ der lokalen Windows-Anwendung.
 
 | Pfad | Zweck |
 | --- | --- |
-| `frontend/` | React-Anwendung, UI-Tests und Frontend-Konfiguration |
-| `backend/` | FastAPI-Anwendung, Konfiguration, Logging und API-Tests |
+| `frontend/` | Nicht mehr gebauter Legacy-Quellstand der früheren React-Oberfläche |
+| `backend/` | FastAPI-Anwendung, Python-Oberfläche, Geschäftslogik und Tests |
 | `data/` | Freigegebene Beispieldaten; produktive und sensible Daten werden nicht versioniert |
 | `docs/` | Architektur, ADRs, Anforderungen und Roadmap |
 | `scripts/` | Hilfs-, Entwicklungs- und Automatisierungsskripte |
@@ -39,11 +39,12 @@ der lokalen Windows-Anwendung.
 ## Windows ohne Installation
 
 Der GitHub-Actions-Workflow `Build Windows standalone` erzeugt
-`PerformanceCockpit_v1.0.2_Windows.zip` sowie `PerformanceCockpit_v1.0.2_Setup.exe`. Das portable Paket
+`PerformanceCockpit_v1.0.3_Windows.zip` sowie `PerformanceCockpit_v1.0.3_Setup.exe`. Das portable Paket
 wird entpackt; anschließend startet `PerformanceCockpit.exe` das Cockpit per Doppelklick.
 
-Zur Laufzeit werden kein Docker, Python, Node.js, PostgreSQL, Internetzugang, Cloud-Dienst oder
-externe API benötigt. Die Daten bleiben unter `%LOCALAPPDATA%\PerformanceCockpit` auf dem Gerät.
+Zur Laufzeit werden kein Docker, keine separate Python-Installation, Node.js, TypeScript,
+PostgreSQL, Internetzugang, Cloud-Dienst oder externe API benötigt. Die Daten bleiben unter
+`%LOCALAPPDATA%\PerformanceCockpit` auf dem Gerät.
 
 ## Optionaler Entwicklungsstart mit Docker
 
@@ -56,8 +57,7 @@ docker compose up --build
 
 Anschließend sind erreichbar:
 
-- Frontend: <http://localhost:5173>
-- Backend: <http://localhost:8000>
+- Dashboard und Backend: <http://localhost:8000>
 - API-Dokumentation: <http://localhost:8000/docs>
 - Health-Endpunkt: <http://localhost:8000/api/v1/health>
 
@@ -98,29 +98,11 @@ ruff format --check .
 pytest
 ```
 
-### Frontend
-
-```bash
-cd frontend
-npm ci
-npm run dev
-```
-
-Qualitätsprüfungen:
-
-```bash
-npm run lint
-npm run format:check
-npm run typecheck
-npm run test
-npm run build
-```
-
 ## Konfiguration
 
 Die Anwendung wird über Umgebungsvariablen konfiguriert. `.env.example` enthält ausschließlich sichere Beispielwerte. Lokale `.env`-Dateien, Zugangsdaten und sensible Daten dürfen nicht eingecheckt werden.
 
-Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen, die im Browser verfügbar sein dürfen, tragen das Präfix `VITE_`.
+Anwendungsvariablen tragen das Präfix `PERFORMANCE_COCKPIT_`.
 
 ## Dokumentation
 
@@ -147,7 +129,14 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 
 ## Version
 
-Aktueller Projektstand: **1.0.2**
+Aktueller Projektstand: **1.0.3**
+
+## Kurz-Changelog 1.0.3
+
+- Dashboard vollständig durch FastAPI und Python gerendert
+- keine Node.js-, npm-, Vite- oder TypeScript-Schritte in CI und Windows-Build
+- Filter, Import, Export, PDF, Backup und Zurücksetzen ohne clientseitiges JavaScript
+- GitHub-Pages-Projektseite wird mit einem Python-Skript erzeugt
 
 ## Kurz-Changelog 1.0.2
 

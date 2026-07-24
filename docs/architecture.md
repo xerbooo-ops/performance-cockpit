@@ -2,14 +2,14 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 1.0.2. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
+Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 1.0.3. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
 
 ## Architekturüberblick
 
 Das System wird in klar getrennte Schichten gegliedert:
 
-1. **Frontend** – React-Anwendung für Kennzahlen, Filter und Statusinformationen.
-2. **Backend** – FastAPI-Anwendung mit versionierter HTTP-API und Geschäftslogik.
+1. **Oberfläche** – Durch FastAPI serverseitig erzeugtes HTML für Kennzahlen und Formulare.
+2. **Anwendung** – Python/FastAPI mit versionierter HTTP-API und Geschäftslogik.
 3. **Datenverarbeitung** – validiert und importiert CSV-Messwerte im Backend.
 4. **Persistenz** – SQLite in der Standalone-Anwendung; PostgreSQL optional für Entwicklung.
 5. **Lokale Quellen** – CSV- und XLSX-Dateien werden ohne externe Verbindung verarbeitet.
@@ -26,11 +26,11 @@ flowchart LR
 
 | Komponente | Verantwortung |
 | --- | --- |
-| React-Frontend | Darstellung, Navigation, Filterzustand und Aufruf der API |
-| FastAPI-Backend | API-Verträge, Validierung, Geschäftslogik und Datenzugriff |
+| FastAPI-Oberfläche | Serverseitiges HTML, Filter und Formulare ohne JavaScript-Build |
+| FastAPI-Anwendung | API-Verträge, Validierung, Geschäftslogik und Datenzugriff |
 | SQLite | Eingebettete lokale Speicherung ohne separaten Datenbankdienst |
 | SQLAlchemy und Alembic | Datenmodell, Datenzugriff und versionierte Migrationen |
-| PyInstaller | Bündelung von Backend, Laufzeit und gebautem Frontend als Windows-EXE |
+| PyInstaller | Bündelung der Python-Anwendung und Laufzeit als Windows-EXE |
 | Docker Compose | Optionale reproduzierbare Entwicklungsumgebung |
 | GitHub Actions | Linting, Tests, Containerprüfung und Windows-Standalone-Build |
 
@@ -45,13 +45,13 @@ flowchart LR
 
 ## Schnittstellenprinzipien
 
-- Das Frontend greift ausschließlich über die Backend-API auf Daten zu.
+- HTML-Oberfläche und API verwenden dieselbe zentrale Python-Geschäftslogik.
 - Die API beginnt unter `/api/v1` und wird bei inkompatiblen Änderungen versioniert.
 - Pydantic-Modelle definieren und dokumentieren Request- und Response-Verträge.
 - Eingehende Daten werden vor der Verarbeitung validiert.
 - Personenbezogene Spalten des Performance-Reports werden vor der Persistenz verworfen.
 - EPA ist die einzige individuelle Organisationseinheit; Potsdam wird im Import kumuliert.
-- Kennzahlberechnungen erfolgen zentral im Backend, nicht parallel im Frontend.
+- Kennzahlberechnungen erfolgen ausschließlich in der Python-Anwendung.
 - Importfehler werden zeilen- und feldbezogen maschinenlesbar ausgegeben.
 
 ## Qualitätssicherung
@@ -59,7 +59,7 @@ flowchart LR
 | Bereich | Prüfungen |
 | --- | --- |
 | Backend | Ruff Linting, Ruff Formatcheck, pytest und Coverage-Schwelle |
-| Frontend | ESLint, Prettier, TypeScript, Vitest und Produktions-Build |
+| Oberfläche | pytest-Integrationstests für HTML, Formulare und Datenschutz |
 | Integration | Docker-Compose-Konfiguration und Container-Build |
 
 Die Continuous-Integration-Pipeline führt diese Prüfungen für Pull Requests und Änderungen an `main` aus.
@@ -75,7 +75,7 @@ Die Continuous-Integration-Pipeline führt diese Prüfungen für Pull Requests u
 ## Standalone-Betrieb
 
 - Die Anwendung bindet nur an `127.0.0.1` und ist nicht aus dem Netzwerk erreichbar.
-- Das gebaute React-Frontend wird vom lokalen FastAPI-Prozess ausgeliefert.
+- Die HTML-Oberfläche wird direkt vom lokalen FastAPI-Prozess erzeugt.
 - Die Oberfläche öffnet sich beim Start automatisch im Standardbrowser.
 - Daten liegen unter `%LOCALAPPDATA%\PerformanceCockpit`.
 - Zur Laufzeit werden keine externen Dienste oder Internetressourcen aufgerufen.
