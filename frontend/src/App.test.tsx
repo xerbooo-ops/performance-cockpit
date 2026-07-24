@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 import App from "./App";
 
 describe("App", () => {
-  it("shows the release and all foundation components", () => {
+  it("shows the data foundation for release 0.3", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: "Performance Cockpit" })).toBeInTheDocument();
-    expect(screen.getByText("React + TypeScript")).toBeInTheDocument();
-    expect(screen.getByText("FastAPI")).toBeInTheDocument();
-    expect(screen.getByText("PostgreSQL")).toBeInTheDocument();
+    expect(screen.getByText("Kennzahlen + Messwerte")).toBeInTheDocument();
+    expect(screen.getByText("Versioniert unter /api/v1")).toBeInTheDocument();
+    expect(screen.getByText("CSV mit Validierung")).toBeInTheDocument();
   });
 });

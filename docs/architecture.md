@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 0.2. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
+Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 0.3. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
 
 ## Architekturüberblick
 
@@ -10,7 +10,7 @@ Das System wird in klar getrennte Schichten gegliedert:
 
 1. **Frontend** – React-Anwendung für Kennzahlen, Filter und Statusinformationen.
 2. **Backend** – FastAPI-Anwendung mit versionierter HTTP-API und Geschäftslogik.
-3. **Datenverarbeitung** – zukünftige Import- und Validierungsdienste im Backend.
+3. **Datenverarbeitung** – validiert und importiert CSV-Messwerte im Backend.
 4. **Persistenz** – PostgreSQL für Konfigurationen, Kennzahlendefinitionen und aufbereitete Daten.
 5. **Externe Quellen** – liefern Rohdaten künftig über Dateien, Datenbanken oder APIs.
 
@@ -29,6 +29,7 @@ flowchart LR
 | React-Frontend | Darstellung, Navigation, Filterzustand und Aufruf der API |
 | FastAPI-Backend | API-Verträge, Validierung, Geschäftslogik und Datenzugriff |
 | PostgreSQL | Persistente Speicherung und konsistente Abfragen |
+| SQLAlchemy und Alembic | Datenmodell, Datenzugriff und versionierte Migrationen |
 | Docker Compose | Reproduzierbare lokale Laufzeitumgebung |
 | GitHub Actions | Linting, Tests, Builds und Containerprüfung |
 
@@ -48,7 +49,7 @@ flowchart LR
 - Pydantic-Modelle definieren und dokumentieren Request- und Response-Verträge.
 - Eingehende Daten werden vor der Verarbeitung validiert.
 - Kennzahlberechnungen erfolgen zentral im Backend, nicht parallel im Frontend.
-- Fehlerantworten verwenden später ein einheitliches, maschinenlesbares Format.
+- Importfehler werden zeilen- und feldbezogen maschinenlesbar ausgegeben.
 
 ## Qualitätssicherung
 
@@ -71,7 +72,7 @@ Die Continuous-Integration-Pipeline führt diese Prüfungen für Pull Requests u
 ## Noch offene Architekturentscheidungen
 
 - Authentifizierungsanbieter und detailliertes Rollenmodell
-- Importstrategie und Aktualisierungsintervalle
+- Adapter und Aktualisierungsintervalle für produktive Datenquellen
 - Hosting, Deployment, Monitoring und Backup
 - Fehlerformat und Korrelations-IDs
 - Datenaufbewahrung und Löschkonzept

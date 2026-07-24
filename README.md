@@ -2,7 +2,7 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 0.2 stellt das technische Fundament mit React, FastAPI, PostgreSQL, Docker Compose, Tests und Continuous Integration bereit.
+> **Projektstatus:** Release 0.3 stellt das relationale Datenmodell, Migrationen, einen validierten CSV-Import und eine versionierte Kennzahlen-API bereit.
 
 ## Öffentliche Vorschau
 
@@ -10,7 +10,7 @@ Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages verö
 
 <https://xerbooo-ops.github.io/performance-cockpit/>
 
-Die Vorschau zeigt aktuell das Frontend von Release 0.2. Das Backend ist noch nicht öffentlich gehostet.
+Die Vorschau zeigt aktuell den Frontend-Status von Release 0.3. Das Backend ist noch nicht öffentlich gehostet.
 
 ## Technischer Stack
 
@@ -19,6 +19,7 @@ Die Vorschau zeigt aktuell das Frontend von Release 0.2. Das Backend ist noch ni
 | Frontend | React 19, TypeScript 6 und Vite 8 |
 | Backend | Python 3.12+ und FastAPI |
 | Datenbank | PostgreSQL 17 |
+| Datenzugriff | SQLAlchemy und Alembic |
 | Tests | Vitest, Testing Library und pytest |
 | Qualität | ESLint, Prettier und Ruff |
 | Lokaler Betrieb | Docker Compose |
@@ -50,6 +51,15 @@ Anschließend sind erreichbar:
 - API-Dokumentation: <http://localhost:8000/docs>
 - Health-Endpunkt: <http://localhost:8000/api/v1/health>
 
+Beim Start führt das Backend ausstehende Datenbankmigrationen automatisch aus.
+
+Beispieldaten importieren:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/imports/csv \
+  -F "file=@data/sample_kpi_measurements.csv"
+```
+
 Beenden:
 
 ```bash
@@ -66,6 +76,7 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
+alembic upgrade head
 uvicorn performance_cockpit.main:app --reload
 ```
 
@@ -104,6 +115,9 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 ## Dokumentation
 
 - [Architektur](docs/architecture.md)
+- [Datenmodell](docs/data-model.md)
+- [API](docs/api.md)
+- [CSV-Import](docs/csv-import.md)
 - [Anforderungen und Kennzahlen](docs/requirements.md)
 - [Roadmap](docs/roadmap.md)
 - [Architecture Decision Records](docs/adr/)
@@ -122,4 +136,4 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 
 ## Version
 
-Aktueller Projektstand: **0.2**
+Aktueller Projektstand: **0.3**

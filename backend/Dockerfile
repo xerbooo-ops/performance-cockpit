@@ -8,13 +8,17 @@ WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY src ./src
+COPY alembic.ini ./
+COPY migrations ./migrations
+COPY entrypoint.sh ./
 
 RUN python -m pip install --upgrade pip && \
-    pip install .
+    pip install . && \
+    chmod +x entrypoint.sh
 
 RUN useradd --create-home --uid 10001 appuser
 USER appuser
 
 EXPOSE 8000
 
-CMD ["uvicorn", "performance_cockpit.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./entrypoint.sh"]

@@ -24,6 +24,9 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: ruff format --check .
+      - run: alembic upgrade head
+        env:
+          PERFORMANCE_COCKPIT_DATABASE_URL: sqlite+pysqlite:///./ci.db
       - run: pytest
 
   frontend:

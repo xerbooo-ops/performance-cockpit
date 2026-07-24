@@ -23,15 +23,15 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 
 ## Release 0.3 – Datenbasis und API
 
-**Status:** geplant
+**Status:** abgeschlossen
 
-- Erstes Datenmodell definieren
-- Datenbankmigrationen einführen
-- Import für eine priorisierte Datenquelle implementieren
-- Datenvalidierung und verständliche Fehlerberichte ergänzen
-- Versionierte API für Kennzahlen bereitstellen
-- Beispiel- und Testdaten dokumentieren
-- Tests für Import und Kennzahlberechnung erstellen
+- Relationales Datenmodell für Kennzahlen, Messwerte und Importprotokolle
+- Alembic-Migrationen und automatische Migration beim Containerstart
+- Idempotenter CSV-Import über API und Kommandozeile
+- Zeilen- und feldbezogene Validierungsberichte
+- Versionierte API für Definitionen, Messwerte und Zusammenfassungen
+- Dokumentierte Beispiel- und Testdaten
+- Tests für Import, Aktualisierung, Filter und Kennzahlberechnung
 
 ## Release 0.4 – Cockpit MVP
 

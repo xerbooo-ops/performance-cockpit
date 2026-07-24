@@ -23,14 +23,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=resolved_settings.app_name,
-        version="0.2.0",
+        version="0.3.0",
         lifespan=lifespan,
     )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=resolved_settings.cors_origins,
         allow_credentials=False,
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
     app.include_router(api_router, prefix=resolved_settings.api_prefix)

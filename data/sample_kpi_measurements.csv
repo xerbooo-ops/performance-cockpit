@@ -1,0 +1,9 @@
+metric_key,metric_name,description,unit,aggregation,organizational_unit,period_start,period_end,value,target_value
+handled_cases,Bearbeitete Vorgänge,Abgeschlossene Vorgänge im Zeitraum,Anzahl,sum,Service Nord,2026-07-01,2026-07-07,110,100
+handled_cases,Bearbeitete Vorgänge,Abgeschlossene Vorgänge im Zeitraum,Anzahl,sum,Service Nord,2026-07-08,2026-07-14,95,100
+handled_cases,Bearbeitete Vorgänge,Abgeschlossene Vorgänge im Zeitraum,Anzahl,sum,Service Süd,2026-07-01,2026-07-07,102,100
+handled_cases,Bearbeitete Vorgänge,Abgeschlossene Vorgänge im Zeitraum,Anzahl,sum,Service Süd,2026-07-08,2026-07-14,108,100
+quality_rate,Qualitätsquote,Positiv bewertete Vorgänge,Prozent,average,Service Nord,2026-07-01,2026-07-07,92.5,90
+quality_rate,Qualitätsquote,Positiv bewertete Vorgänge,Prozent,average,Service Nord,2026-07-08,2026-07-14,88.5,90
+quality_rate,Qualitätsquote,Positiv bewertete Vorgänge,Prozent,average,Service Süd,2026-07-01,2026-07-07,91.0,90
+quality_rate,Qualitätsquote,Positiv bewertete Vorgänge,Prozent,average,Service Süd,2026-07-08,2026-07-14,93.0,90
