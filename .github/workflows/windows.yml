@@ -58,11 +58,11 @@ jobs:
       - name: Package release
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0" -Force
-          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0/"
-          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0/"
-          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0/README.txt"
-          Compress-Archive -Path "release/PerformanceCockpit_v1.0" -DestinationPath "release/PerformanceCockpit_v1.0_Windows.zip"
+          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0.1" -Force
+          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0.1/"
+          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0.1/"
+          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0.1/README.txt"
+          Compress-Archive -Path "release/PerformanceCockpit_v1.0.1" -DestinationPath "release/PerformanceCockpit_v1.0.1_Windows.zip"
       - name: Build installer
         shell: pwsh
         run: |
@@ -73,8 +73,8 @@ jobs:
           & $iscc "scripts/windows-installer.iss"
       - uses: actions/upload-artifact@v4
         with:
-          name: PerformanceCockpit-v1.0-Windows
+          name: PerformanceCockpit-v1.0.1-Windows
           path: |
-            release/PerformanceCockpit_v1.0_Windows.zip
-            release/PerformanceCockpit_v1.0_Setup.exe
+            release/PerformanceCockpit_v1.0.1_Windows.zip
+            release/PerformanceCockpit_v1.0.1_Setup.exe
           if-no-files-found: error

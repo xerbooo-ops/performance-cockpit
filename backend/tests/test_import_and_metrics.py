@@ -190,3 +190,123 @@ def test_xlsx_import_uses_the_same_validated_pipeline(client: TestClient) -> Non
     assert response.status_code == 200
     assert response.json()["status"] == "completed"
     assert response.json()["imported_rows"] == 3
+
+
+def test_xlsx_import_accepts_original_wide_employee_report(client: TestClient) -> None:
+    workbook = Workbook()
+    sheet = workbook.active
+    headers = [
+        "Teamleiter",
+        "Mitarbeiter",
+        "EPA",
+        "VVL",
+        "BNT",
+        "Mobile",
+        "VVL Mobile",
+        "Angebote",
+        "Angebotsquote",
+        "Calls",
+        "BBCR",
+        "Bewertungen",
+        "TNPS",
+        "CS",
+        "Total Fix",
+        "Auflegerquote",
+        "CHT",
+        "ACW",
+        "FB Quote",
+    ]
+    for column, header in enumerate(headers, start=2):
+        sheet.cell(11, column, header)
+    values = [
+        "TL Nord",
+        "Erika Muster",
+        "4711",
+        2,
+        1,
+        0,
+        1,
+        5,
+        0.5,
+        20,
+        0.25,
+        8,
+        42,
+        90,
+        0.8,
+        0.1,
+        365,
+        64,
+        0.75,
+    ]
+    for column, value in enumerate(values, start=2):
+        sheet.cell(12, column, value)
+    for column in (10, 12, 16, 17, 20):
+        sheet.cell(12, column).number_format = "0.00%"
+    content = BytesIO()
+    workbook.save(content)
+
+    response = client.post(
+        "/api/v1/imports/file",
+        files={
+            "file": (
+                "employee-report.xlsx",
+                content.getvalue(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "completed"
+    assert response.json()["imported_rows"] == 16
+    filters = client.get("/api/v1/metrics/dashboard/filters").json()
+    assert filters["organizational_units"] == ["TL Nord · Erika Muster"]
+    offer_rate = client.get(
+        "/api/v1/metrics/offer_rate/summary",
+        params={"organizational_unit": "TL Nord · Erika Muster"},
+    )
+    assert offer_rate.json()["value"] == "50.00"
+
+
+def test_xlsx_import_falls_back_to_wide_daily_summary(client: TestClient) -> None:
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet["E2"] = "AHT"
+    sheet["F2"] = "ACW"
+    sheet["D3"] = "April"
+    sheet["E3"] = 365
+    sheet["F3"] = 64
+    summary_headers = ["EPA", "VVL", "BNT", "Mobile", "Angebote", "Calls", "BBCR"]
+    for column, header in enumerate(summary_headers, start=4):
+        sheet.cell(9, column, header)
+    for column, value in enumerate(["Potsdam", 2, 1, 0, 4, 20, 0.25], start=4):
+        sheet.cell(10, column, value)
+    sheet.cell(10, 10).number_format = "0.00%"
+    for column, header in enumerate(["Teamleiter", "Mitarbeiter", *summary_headers], start=2):
+        sheet.cell(11, column, header)
+    content = BytesIO()
+    workbook.save(content)
+
+    response = client.post(
+        "/api/v1/imports/file",
+        files={
+            "file": (
+                "summary-report.xlsx",
+                content.getvalue(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "completed"
+    assert response.json()["imported_rows"] == 8
+    assert client.get("/api/v1/metrics/dashboard/filters").json()["organizational_units"] == [
+        "Potsdam"
+    ]
+    aht = client.get(
+        "/api/v1/metrics/aht/summary",
+        params={"organizational_unit": "Potsdam"},
+    )
+    assert aht.json()["value"] == "365.00"

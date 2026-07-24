@@ -24,7 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=resolved_settings.app_name,
-        version="1.0.0",
+        version="1.0.1",
         lifespan=lifespan,
     )
     app.state.settings = resolved_settings

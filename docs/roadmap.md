@@ -87,6 +87,17 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 Vor einer breiten organisatorischen Verteilung bleiben ein Pilot auf den konkret eingesetzten
 Windows-10-/11-Systemen und – sobald ein Zertifikat vorliegt – die digitale Signatur empfohlen.
 
+## Release 1.0.1 – Excel-Kompatibilität
+
+**Status:** abgeschlossen
+
+- Ursprünglichen Performance-Report im Breitformat automatisch erkennen
+- Kopfzeilen außerhalb der ersten Tabellenzeile verarbeiten
+- Mitarbeiterdaten oder ersatzweise Tageszusammenfassung importieren
+- Prozentformate korrekt in Dashboardwerte umrechnen
+- Monatlichen AHT-/ACW-Verlauf übernehmen
+- Leere Zellen und Excel-Fehlerwerte sicher überspringen
+
 ## Übergreifende Leitlinien
 
 Für jedes Release gelten:

@@ -3,7 +3,11 @@
 ## Format
 
 Der Import akzeptiert UTF-8-kodierte CSV-Dateien und Excel-Arbeitsmappen im XLSX-Format. Bei XLSX
-wird das erste Tabellenblatt gelesen. Beide Formate müssen folgende Spalten enthalten:
+wird das erste Tabellenblatt gelesen. Unterstützt werden zwei Strukturen.
+
+### Normiertes Austauschformat
+
+CSV-Dateien und normierte XLSX-Dateien enthalten folgende Spalten:
 
 | Spalte | Beschreibung | Beispiel |
 | --- | --- | --- |
@@ -20,6 +24,24 @@ wird das erste Tabellenblatt gelesen. Beide Formate müssen folgende Spalten ent
 
 Die maximale Dateigröße beträgt 5 MB. Eine Beispieldatei liegt unter
 [`data/sample_kpi_measurements.csv`](../data/sample_kpi_measurements.csv).
+
+### Performance-Report im Breitformat
+
+Der Import erkennt außerdem den ursprünglichen Excel-Report automatisch, auch wenn die eigentliche
+Tabelle erst nach Übersichts- und Monatszeilen beginnt. Er sucht die Kopfzeile mit `Teamleiter`,
+`Mitarbeiter` und `EPA` und ordnet folgende Kennzahlen zu:
+
+| Reportspalte | Verwendung |
+| --- | --- |
+| `VVL`, `BNT`, `Mobile`, `VVL Mobile`, `Angebote`, `Calls`, `Bewertungen` | Anzahl |
+| `Angebotsquote`, `BBCR`, `Total Fix`, `Auflegerquote`, `FB Quote` | Prozent |
+| `TNPS`, `CS` | Punkte |
+| `CHT`, `AHT`, `ACW` | Sekunden |
+
+Ausgefüllte Mitarbeiterzeilen werden je Mitarbeiter beziehungsweise EPA importiert. Sind sie leer,
+wird die Tageszusammenfassung – beispielsweise `Potsdam` – verwendet. Ein oberhalb der Tabelle
+angegebener Monatsverlauf für AHT und ACW wird ebenfalls übernommen. Leere Zellen und Excel-Fehler
+wie `#DIV/0!` werden übersprungen.
 
 ## Import in der Anwendung
 

@@ -401,7 +401,7 @@ function App() {
           <span className="brand-mark">PC</span>
           <div>
             <strong>Performance Cockpit</strong>
-            <span>Release 1.0 · lokale Standalone-Version</span>
+            <span>Release 1.0.1 · Excel-Kompatibilität</span>
           </div>
         </div>
         <label className={`import-button ${importing ? "disabled" : ""}`}>
