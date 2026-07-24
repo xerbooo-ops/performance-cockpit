@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from performance_cockpit.api.router import api_router
 from performance_cockpit.config import Settings, get_settings
@@ -23,7 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=resolved_settings.app_name,
-        version="0.3.0",
+        version="0.4.0",
         lifespan=lifespan,
     )
     app.add_middleware(
@@ -34,6 +35,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(api_router, prefix=resolved_settings.api_prefix)
+    if resolved_settings.frontend_dir and resolved_settings.frontend_dir.is_dir():
+        app.mount(
+            "/",
+            StaticFiles(directory=resolved_settings.frontend_dir, html=True),
+            name="frontend",
+        )
     return app
 
 

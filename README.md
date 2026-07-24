@@ -2,7 +2,7 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 0.3 stellt das relationale Datenmodell, Migrationen, einen validierten CSV-Import und eine versionierte Kennzahlen-API bereit.
+> **Projektstatus:** Release 0.4 verbindet das Cockpit mit CSV-/Excel-Import und legt die Grundlage für den vollständig lokalen Windows-Betrieb.
 
 ## Öffentliche Vorschau
 
@@ -10,7 +10,8 @@ Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages verö
 
 <https://xerbooo-ops.github.io/performance-cockpit/>
 
-Die Vorschau zeigt aktuell den Frontend-Status von Release 0.3. Das Backend ist noch nicht öffentlich gehostet.
+Die Vorschau zeigt Release 0.4 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
+der lokalen Windows-Anwendung.
 
 ## Technischer Stack
 
@@ -18,11 +19,11 @@ Die Vorschau zeigt aktuell den Frontend-Status von Release 0.3. Das Backend ist 
 | --- | --- |
 | Frontend | React 19, TypeScript 6 und Vite 8 |
 | Backend | Python 3.12+ und FastAPI |
-| Datenbank | PostgreSQL 17 |
+| Datenbank | SQLite (Standalone), PostgreSQL 17 (optionale Entwicklung) |
 | Datenzugriff | SQLAlchemy und Alembic |
 | Tests | Vitest, Testing Library und pytest |
 | Qualität | ESLint, Prettier und Ruff |
-| Lokaler Betrieb | Docker Compose |
+| Lokaler Betrieb | Portable Windows-EXE; optional Docker Compose für Entwicklung |
 | CI | GitHub Actions |
 
 ## Projektstruktur
@@ -35,7 +36,16 @@ Die Vorschau zeigt aktuell den Frontend-Status von Release 0.3. Das Backend ist 
 | `docs/` | Architektur, ADRs, Anforderungen und Roadmap |
 | `scripts/` | Hilfs-, Entwicklungs- und Automatisierungsskripte |
 
-## Schnellstart mit Docker
+## Windows ohne Installation
+
+Der GitHub-Actions-Workflow `Build Windows standalone` erzeugt
+`PerformanceCockpit_v0.4_Windows.zip`. Nach dem Entpacken startet
+`PerformanceCockpit.exe` das Cockpit per Doppelklick.
+
+Zur Laufzeit werden kein Docker, Python, Node.js, PostgreSQL, Internetzugang, Cloud-Dienst oder
+externe API benötigt. Die Daten bleiben unter `%LOCALAPPDATA%\PerformanceCockpit` auf dem Gerät.
+
+## Optionaler Entwicklungsstart mit Docker
 
 Voraussetzung ist eine aktuelle Docker-Installation mit Docker Compose.
 
@@ -118,6 +128,7 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 - [Datenmodell](docs/data-model.md)
 - [API](docs/api.md)
 - [CSV-Import](docs/csv-import.md)
+- [Windows-Standalone](docs/windows-standalone.md)
 - [Anforderungen und Kennzahlen](docs/requirements.md)
 - [Roadmap](docs/roadmap.md)
 - [Architecture Decision Records](docs/adr/)
@@ -136,4 +147,11 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 
 ## Version
 
-Aktueller Projektstand: **0.3**
+Aktueller Projektstand: **0.4**
+
+## Kurz-Changelog 0.4
+
+- Dashboard mit KPI-Karten, Filtern und Datenstatus
+- CSV- und XLSX-Import aus der Oberfläche
+- eingebettete lokale SQLite-Datenbank
+- portable Windows-EXE und automatisiertes ZIP-Paket

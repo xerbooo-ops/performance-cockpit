@@ -1,0 +1,70 @@
+name: Build Windows standalone
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Build portable executable
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[packaging]"
+          pyinstaller --noconfirm performance-cockpit.spec
+      - name: Smoke test executable
+        shell: pwsh
+        run: |
+          $env:PERFORMANCE_COCKPIT_NO_BROWSER = "1"
+          $env:PERFORMANCE_COCKPIT_PORT = "8765"
+          $process = Start-Process -FilePath "backend/dist/PerformanceCockpit.exe" -PassThru
+          try {
+            $healthy = $false
+            1..30 | ForEach-Object {
+              if (-not $healthy) {
+                Start-Sleep -Seconds 1
+                try {
+                  $response = Invoke-RestMethod "http://127.0.0.1:8765/api/v1/health"
+                  $healthy = $response.status -eq "ok"
+                } catch {}
+              }
+            }
+            if (-not $healthy) { throw "Standalone health check failed" }
+          } finally {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+          }
+      - name: Package release
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v0.4" -Force
+          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v0.4/"
+          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v0.4/"
+          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v0.4/README.txt"
+          Compress-Archive -Path "release/PerformanceCockpit_v0.4" -DestinationPath "release/PerformanceCockpit_v0.4_Windows.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PerformanceCockpit-v0.4-Windows
+          path: release/PerformanceCockpit_v0.4_Windows.zip
+          if-no-files-found: error

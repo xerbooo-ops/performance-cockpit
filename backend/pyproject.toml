@@ -4,12 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "performance-cockpit"
-version = "0.3.0"
+version = "0.4.0"
 description = "Backend API for the Performance Cockpit"
 requires-python = ">=3.12"
 dependencies = [
   "alembic>=1.14,<2",
   "fastapi>=0.115,<1",
+  "openpyxl>=3.1,<4",
   "pydantic-settings>=2.7,<3",
   "psycopg[binary]>=3.2,<4",
   "python-multipart>=0.0.20,<1",
@@ -25,12 +26,16 @@ dev = [
   "pytest-cov>=6,<8",
   "ruff>=0.9,<1",
 ]
+packaging = [
+  "pyinstaller>=6.14,<7",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/performance_cockpit"]
 
 [project.scripts]
 performance-cockpit-import = "performance_cockpit.cli:main"
+performance-cockpit = "performance_cockpit.standalone:main"
 
 [tool.pytest.ini_options]
 addopts = "--cov=performance_cockpit --cov-report=term-missing --cov-fail-under=80"

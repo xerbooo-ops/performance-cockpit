@@ -57,3 +57,18 @@ class ImportResult(BaseModel):
     imported_rows: int
     failed_rows: int
     errors: list[ImportError] = Field(default_factory=list)
+
+
+class DashboardFilters(BaseModel):
+    organizational_units: list[str]
+    period_start: date | None
+    period_end: date | None
+
+
+class DashboardData(BaseModel):
+    organizational_unit: str
+    period_start: date | None
+    period_end: date | None
+    last_imported_at: datetime | None
+    source_files: list[str]
+    summaries: list[MetricSummary]

@@ -1,11 +1,11 @@
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
 
-from performance_cockpit.models import Measurement, MetricDefinition
-from performance_cockpit.schemas import MetricSummary
+from performance_cockpit.models import ImportBatch, Measurement, MetricDefinition
+from performance_cockpit.schemas import DashboardData, DashboardFilters, MetricSummary
 
 PRECISION = Decimal("0.01")
 
@@ -83,3 +83,53 @@ def get_summary(
     if not measurements:
         return None
     return calculate_summary(metric, organizational_unit, measurements)
+
+
+def get_dashboard_filters(session: Session) -> DashboardFilters:
+    units = list(
+        session.scalars(
+            select(Measurement.organizational_unit)
+            .distinct()
+            .order_by(Measurement.organizational_unit)
+        )
+    )
+    period_start, period_end = session.execute(
+        select(func.min(Measurement.period_start), func.max(Measurement.period_end))
+    ).one()
+    return DashboardFilters(
+        organizational_units=units,
+        period_start=period_start,
+        period_end=period_end,
+    )
+
+
+def get_dashboard(
+    session: Session,
+    organizational_unit: str,
+    date_from: date | None,
+    date_to: date | None,
+) -> DashboardData:
+    metrics = list(session.scalars(select(MetricDefinition).order_by(MetricDefinition.key)))
+    summaries = [
+        summary
+        for metric in metrics
+        if (summary := get_summary(session, metric, organizational_unit, date_from, date_to))
+        is not None
+    ]
+    sources = list(
+        session.scalars(
+            select(Measurement.source)
+            .where(Measurement.organizational_unit == organizational_unit)
+            .distinct()
+            .order_by(Measurement.source)
+        )
+    )
+    last_imported_at = session.scalar(select(func.max(ImportBatch.created_at)))
+    return DashboardData(
+        organizational_unit=organizational_unit,
+        period_start=min((item.period_start for item in summaries), default=None),
+        period_end=max((item.period_end for item in summaries), default=None),
+        last_imported_at=last_imported_at,
+        source_files=sources,
+        summaries=summaries,
+    )

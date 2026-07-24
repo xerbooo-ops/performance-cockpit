@@ -6,10 +6,46 @@ from sqlalchemy.orm import Session
 from performance_cockpit.database import get_db
 from performance_cockpit.schemas import ImportResult
 from performance_cockpit.services.csv_import import import_csv_text
+from performance_cockpit.services.file_import import import_xlsx_bytes
 
 router = APIRouter(prefix="/imports", tags=["imports"])
 DatabaseSession = Annotated[Session, Depends(get_db)]
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
+
+@router.post("/file", response_model=ImportResult)
+async def import_file(
+    session: DatabaseSession,
+    file: Annotated[UploadFile, File(description="CSV or XLSX file with KPI measurements")],
+) -> ImportResult:
+    suffix = file.filename.lower().rsplit(".", maxsplit=1)[-1] if file.filename else ""
+    if suffix not in {"csv", "xlsx"}:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="A CSV or XLSX file is required",
+        )
+    payload = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(payload) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="File exceeds the 5 MB limit",
+        )
+    if suffix == "xlsx":
+        try:
+            return import_xlsx_bytes(session, file.filename, payload)
+        except (OSError, ValueError, KeyError) as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="XLSX file could not be read",
+            ) from error
+    try:
+        content = payload.decode("utf-8-sig")
+    except UnicodeDecodeError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="CSV file must be UTF-8 encoded",
+        ) from error
+    return import_csv_text(session, file.filename, content)
 
 
 @router.post("/csv", response_model=ImportResult)

@@ -1,6 +1,8 @@
 from decimal import Decimal
+from io import BytesIO
 
 from fastapi.testclient import TestClient
+from openpyxl import Workbook
 from sqlalchemy.orm import Session
 
 from performance_cockpit.models import Measurement
@@ -111,3 +113,47 @@ def test_missing_metric_and_invalid_upload_return_clear_errors(client: TestClien
 
     assert metric_response.status_code == 404
     assert upload_response.status_code == 415
+
+
+def test_dashboard_exposes_filters_summaries_and_sources(client: TestClient) -> None:
+    client.post("/api/v1/imports/csv", files={"file": ("sample.csv", VALID_CSV, "text/csv")})
+
+    filters = client.get("/api/v1/metrics/dashboard/filters")
+    dashboard = client.get(
+        "/api/v1/metrics/dashboard",
+        params={"organizational_unit": "Service Nord"},
+    )
+
+    assert filters.status_code == 200
+    assert filters.json() == {
+        "organizational_units": ["Service Nord"],
+        "period_start": "2026-07-01",
+        "period_end": "2026-07-14",
+    }
+    assert dashboard.status_code == 200
+    assert dashboard.json()["source_files"] == ["sample.csv"]
+    assert len(dashboard.json()["summaries"]) == 2
+
+
+def test_xlsx_import_uses_the_same_validated_pipeline(client: TestClient) -> None:
+    workbook = Workbook()
+    sheet = workbook.active
+    for row in VALID_CSV.strip().splitlines():
+        sheet.append(row.split(","))
+    content = BytesIO()
+    workbook.save(content)
+
+    response = client.post(
+        "/api/v1/imports/file",
+        files={
+            "file": (
+                "sample.xlsx",
+                content.getvalue(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "completed"
+    assert response.json()["imported_rows"] == 3

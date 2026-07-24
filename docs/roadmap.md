@@ -35,23 +35,25 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 
 ## Release 0.4 – Cockpit MVP
 
+**Status:** abgeschlossen
+
+- Dashboard mit Kernkennzahlen, Filtern und Zeiträumen
+- Lade-, Leer- und Fehlerzustände
+- Sichtbare Datenaktualität und Datenquelle
+- CSV- und Excel-Import direkt in der Oberfläche
+- Lokale SQLite-Standarddatenbank
+- Portable Windows-EXE mit gebündeltem Frontend und Backend
+- Automatisierter Windows-Build mit Starttest und ZIP-Paket
+
+## Release 0.5 – Lokale Datenverwaltung
+
 **Status:** geplant
 
-- Dashboard-Grundlayout umsetzen
-- Kernkennzahlen, Filter und Zeiträume darstellen
-- Lade-, Leer- und Fehlerzustände gestalten
-- Datenaktualität und Datenquelle sichtbar machen
-- Nutzerfeedback zum MVP erheben und priorisieren
-
-## Release 0.5 – Sicherheit und Betrieb
-
-**Status:** geplant
-
-- Authentifizierung und rollenbasierte Berechtigungen umsetzen
-- Datenschutz- und Aufbewahrungskonzept dokumentieren
-- Monitoring, strukturierte Logs und Alarmierung ergänzen
-- Backup- und Wiederherstellungsprozess definieren
-- Deployment für eine Testumgebung automatisieren
+- Importhistorie und verständliche Fehleranzeige in der Oberfläche
+- Lokale Sicherung und Wiederherstellung
+- Datenexport und Zurücksetzen mit Sicherheitsabfrage
+- Schema-Migrationen für bestehende lokale Datenbanken
+- Signierter Windows-Installer zusätzlich zur portablen EXE
 
 ## Release 1.0 – Produktiver Start
 
@@ -60,7 +62,7 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 - Abnahmekriterien und nichtfunktionale Anforderungen erfüllen
 - Barrierefreiheit, Performance und Sicherheit prüfen
 - Betriebs- und Supportdokumentation abschließen
-- Pilotbetrieb durchführen und Erkenntnisse einarbeiten
+- Pilotbetrieb auf Windows 10/11 durchführen und Erkenntnisse einarbeiten
 - Produktionsfreigabe und Release-Prozess etablieren
 
 ## Übergreifende Leitlinien

@@ -7,11 +7,37 @@ from sqlalchemy.orm import Session
 
 from performance_cockpit.database import get_db
 from performance_cockpit.models import MetricDefinition
-from performance_cockpit.schemas import MeasurementRead, MetricDefinitionRead, MetricSummary
-from performance_cockpit.services.metrics import get_summary, measurement_query
+from performance_cockpit.schemas import (
+    DashboardData,
+    DashboardFilters,
+    MeasurementRead,
+    MetricDefinitionRead,
+    MetricSummary,
+)
+from performance_cockpit.services.metrics import (
+    get_dashboard,
+    get_dashboard_filters,
+    get_summary,
+    measurement_query,
+)
 
 router = APIRouter(prefix="/metrics", tags=["metrics"])
 DatabaseSession = Annotated[Session, Depends(get_db)]
+
+
+@router.get("/dashboard/filters", response_model=DashboardFilters)
+def read_dashboard_filters(session: DatabaseSession) -> DashboardFilters:
+    return get_dashboard_filters(session)
+
+
+@router.get("/dashboard", response_model=DashboardData)
+def read_dashboard(
+    session: DatabaseSession,
+    organizational_unit: Annotated[str, Query(min_length=1, max_length=120)],
+    date_from: date | None = None,
+    date_to: date | None = None,
+) -> DashboardData:
+    return get_dashboard(session, organizational_unit, date_from, date_to)
 
 
 @router.get("", response_model=list[MetricDefinitionRead])

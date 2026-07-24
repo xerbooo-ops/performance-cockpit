@@ -1,7 +1,22 @@
+import os
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def application_data_dir() -> Path:
+    """Return a writable, user-local directory without requiring configuration."""
+    if os.name == "nt":
+        root = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    else:
+        root = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
+    return root / "PerformanceCockpit"
+
+
+def default_database_url() -> str:
+    return f"sqlite+pysqlite:///{(application_data_dir() / 'performance-cockpit.db').as_posix()}"
 
 
 class Settings(BaseSettings):
@@ -18,8 +33,9 @@ class Settings(BaseSettings):
     environment: str = "development"
     log_level: str = "INFO"
     api_prefix: str = "/api/v1"
-    database_url: str = "postgresql+psycopg://performance_cockpit:change-me-locally@localhost:5432/performance_cockpit"
+    database_url: str = Field(default_factory=default_database_url)
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    frontend_dir: Path | None = None
 
 
 @lru_cache

@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 0.3. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
+Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 0.4. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
 
 ## Architekturüberblick
 
@@ -11,15 +11,15 @@ Das System wird in klar getrennte Schichten gegliedert:
 1. **Frontend** – React-Anwendung für Kennzahlen, Filter und Statusinformationen.
 2. **Backend** – FastAPI-Anwendung mit versionierter HTTP-API und Geschäftslogik.
 3. **Datenverarbeitung** – validiert und importiert CSV-Messwerte im Backend.
-4. **Persistenz** – PostgreSQL für Konfigurationen, Kennzahlendefinitionen und aufbereitete Daten.
-5. **Externe Quellen** – liefern Rohdaten künftig über Dateien, Datenbanken oder APIs.
+4. **Persistenz** – SQLite in der Standalone-Anwendung; PostgreSQL optional für Entwicklung.
+5. **Lokale Quellen** – CSV- und XLSX-Dateien werden ohne externe Verbindung verarbeitet.
 
 ```mermaid
 flowchart LR
-    S[Externe Datenquellen] --> P[Import und Validierung]
-    P --> D[(PostgreSQL)]
-    D --> B[FastAPI Backend]
-    B --> F[React Frontend]
+    S[Lokale CSV/XLSX] --> P[Import und Validierung]
+    P --> D[(SQLite)]
+    D --> B[Gebündeltes Backend]
+    B --> F[Lokales Cockpit]
 ```
 
 ## Komponenten
@@ -28,10 +28,11 @@ flowchart LR
 | --- | --- |
 | React-Frontend | Darstellung, Navigation, Filterzustand und Aufruf der API |
 | FastAPI-Backend | API-Verträge, Validierung, Geschäftslogik und Datenzugriff |
-| PostgreSQL | Persistente Speicherung und konsistente Abfragen |
+| SQLite | Eingebettete lokale Speicherung ohne separaten Datenbankdienst |
 | SQLAlchemy und Alembic | Datenmodell, Datenzugriff und versionierte Migrationen |
-| Docker Compose | Reproduzierbare lokale Laufzeitumgebung |
-| GitHub Actions | Linting, Tests, Builds und Containerprüfung |
+| PyInstaller | Bündelung von Backend, Laufzeit und gebautem Frontend als Windows-EXE |
+| Docker Compose | Optionale reproduzierbare Entwicklungsumgebung |
+| GitHub Actions | Linting, Tests, Containerprüfung und Windows-Standalone-Build |
 
 ## Konfiguration und Logging
 
@@ -69,10 +70,10 @@ Die Continuous-Integration-Pipeline führt diese Prüfungen für Pull Requests u
 - Minimierte, versionierte API-Oberfläche
 - Abhängigkeiten und Container werden regelmäßig aktualisiert
 
-## Noch offene Architekturentscheidungen
+## Standalone-Betrieb
 
-- Authentifizierungsanbieter und detailliertes Rollenmodell
-- Adapter und Aktualisierungsintervalle für produktive Datenquellen
-- Hosting, Deployment, Monitoring und Backup
-- Fehlerformat und Korrelations-IDs
-- Datenaufbewahrung und Löschkonzept
+- Die Anwendung bindet nur an `127.0.0.1` und ist nicht aus dem Netzwerk erreichbar.
+- Das gebaute React-Frontend wird vom lokalen FastAPI-Prozess ausgeliefert.
+- Die Oberfläche öffnet sich beim Start automatisch im Standardbrowser.
+- Daten liegen unter `%LOCALAPPDATA%\PerformanceCockpit`.
+- Zur Laufzeit werden keine externen Dienste oder Internetressourcen aufgerufen.
