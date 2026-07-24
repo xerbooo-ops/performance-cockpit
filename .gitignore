@@ -1,0 +1,40 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies
+node_modules/
+vendor/
+.venv/
+venv/
+
+# Build output
+dist/
+build/
+out/
+coverage/
+*.log
+
+# Runtime and caches
+.cache/
+.pytest_cache/
+.mypy_cache/
+__pycache__/
+*.py[cod]
+*.pid
+tmp/
+temp/
+
+# IDE and operating system
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local data
+data/*
+!data/.gitkeep
