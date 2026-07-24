@@ -1,11 +1,13 @@
 import sqlite3
 from datetime import date
 from decimal import Decimal
+from io import BytesIO
 from pathlib import Path
 
 import pytest
 from alembic import command
 from fastapi.testclient import TestClient
+from openpyxl import load_workbook
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import Session
 
@@ -14,7 +16,9 @@ from performance_cockpit.database import initialize_database, migration_config
 from performance_cockpit.models import Base, ImportBatch, Measurement, MetricDefinition
 from performance_cockpit.services.data_management import (
     create_backup,
+    export_dashboard_pdf,
     export_measurements_csv,
+    export_measurements_xlsx,
     reset_data,
     restore_backup,
     sqlite_database_path,
@@ -33,6 +37,11 @@ def test_history_export_and_confirmed_reset(client: TestClient) -> None:
 
     history = client.get("/api/v1/data/imports")
     export = client.get("/api/v1/data/export.csv")
+    xlsx = client.get("/api/v1/data/export.xlsx")
+    pdf = client.get(
+        "/api/v1/data/report.pdf",
+        params={"organizational_unit": "Team A"},
+    )
     rejected_reset = client.post("/api/v1/data/reset", json={"confirmation": "delete"})
     accepted_reset = client.post("/api/v1/data/reset", json={"confirmation": "DELETE"})
 
@@ -41,6 +50,13 @@ def test_history_export_and_confirmed_reset(client: TestClient) -> None:
     assert history.json()[0]["errors"] == []
     assert export.status_code == 200
     assert "sales,Umsatz,Umsatz,Euro,sum,Team A" in export.text
+    workbook = load_workbook(BytesIO(xlsx.content), read_only=True)
+    assert workbook["Kennzahlen"]["A2"].value == "sales"
+    assert xlsx.headers["content-type"].startswith(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    assert pdf.content.startswith(b"%PDF-1.4")
+    assert pdf.headers["content-type"] == "application/pdf"
     assert rejected_reset.status_code == 422
     assert accepted_reset.status_code == 200
     assert client.get("/api/v1/metrics/dashboard/filters").json()["organizational_units"] == []
@@ -82,6 +98,8 @@ def test_backup_and_restore_round_trip(tmp_path: Path) -> None:
         )
         session.commit()
         assert "quality,Qualität" in export_measurements_csv(session)
+        assert export_measurements_xlsx(session).startswith(b"PK")
+        assert export_dashboard_pdf(session, "Team A").startswith(b"%PDF-1.4")
 
     backup = create_backup(database_path)
     with Session(engine) as session:

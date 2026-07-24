@@ -64,6 +64,15 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 - Kennzahl-Drilldown mit Zeitraumfilter
 - Lokale Visualisierung ohne externe Bibliotheken oder Webzugriffe
 
+## Release 0.7 – Berichte und Export
+
+**Status:** abgeschlossen
+
+- Formatierter Excel-Export aller Messwerte
+- PDF-Bericht für Organisationseinheit und Filterzeitraum
+- Direkte Downloads in der lokalen Oberfläche
+- Vollständig lokale Berichtserzeugung ohne Cloud-Dienste
+
 ## Release 1.0 – Produktiver Start
 
 **Status:** geplant

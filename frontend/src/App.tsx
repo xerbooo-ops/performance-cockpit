@@ -398,7 +398,7 @@ function App() {
           <span className="brand-mark">PC</span>
           <div>
             <strong>Performance Cockpit</strong>
-            <span>Release 0.6 · Analyse und Drilldown</span>
+            <span>Release 0.7 · Berichte und Export</span>
           </div>
         </div>
         <label className={`import-button ${importing ? "disabled" : ""}`}>
@@ -624,9 +624,31 @@ function App() {
                 ↗
               </span>
               <h3>Daten exportieren</h3>
-              <p>Alle Messwerte als wiederverwendbare CSV-Datei sichern.</p>
-              <a href={`${API_BASE}/data/export.csv`} onClick={handleLocalDownload}>
-                CSV herunterladen
+              <p>Alle Messwerte als CSV- oder formatierte Excel-Datei sichern.</p>
+              <div className="download-links">
+                <a href={`${API_BASE}/data/export.xlsx`} onClick={handleLocalDownload}>
+                  Excel herunterladen
+                </a>
+                <a href={`${API_BASE}/data/export.csv`} onClick={handleLocalDownload}>
+                  CSV herunterladen
+                </a>
+              </div>
+            </article>
+            <article className="management-card">
+              <span className="management-icon" aria-hidden="true">
+                ⎙
+              </span>
+              <h3>PDF-Bericht</h3>
+              <p>Die aktuell gefilterten Kennzahlen als lokalen Bericht weitergeben.</p>
+              <a
+                href={`${API_BASE}/data/report.pdf?${new URLSearchParams({
+                  organizational_unit: unit,
+                  ...(dateFrom ? { date_from: dateFrom } : {}),
+                  ...(dateTo ? { date_to: dateTo } : {}),
+                })}`}
+                onClick={handleLocalDownload}
+              >
+                PDF herunterladen
               </a>
             </article>
             <article className="management-card">

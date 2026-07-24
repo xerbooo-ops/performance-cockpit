@@ -138,6 +138,14 @@ describe("App", () => {
     expect(screen.getByText("Fehlgeschlagen")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Entwicklung und Vergleich" })).toBeInTheDocument();
     expect(screen.getByText("Zeitverlauf · Service Nord")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Excel herunterladen" })).toHaveAttribute(
+      "href",
+      "/api/v1/data/export.xlsx",
+    );
+    expect(screen.getByRole("link", { name: "PDF herunterladen" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("organizational_unit=Service+Nord"),
+    );
     await userEvent.selectOptions(screen.getByLabelText("Kennzahl"), "quality");
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(

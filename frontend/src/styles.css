@@ -501,7 +501,7 @@ dd {
 
 .management-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
 }
 
@@ -552,6 +552,16 @@ dd {
   font-size: 0.8rem;
   font-weight: 850;
   text-decoration: none;
+}
+
+.download-links {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.download-links a {
+  margin-top: 0;
 }
 
 .text-action input {

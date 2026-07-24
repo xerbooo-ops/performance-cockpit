@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Annotated
 
 from fastapi import (
@@ -23,7 +23,9 @@ from performance_cockpit.database import (
 from performance_cockpit.schemas import DataActionResult, ImportBatchRead, ResetRequest
 from performance_cockpit.services.data_management import (
     create_backup,
+    export_dashboard_pdf,
     export_measurements_csv,
+    export_measurements_xlsx,
     import_history,
     reset_data,
     restore_backup,
@@ -62,6 +64,37 @@ def export_csv(session: DatabaseSession) -> Response:
         media_type="text/csv; charset=utf-8",
         headers={
             "Content-Disposition": f'attachment; filename="performance-cockpit-{timestamp}.csv"'
+        },
+    )
+
+
+@router.get("/export.xlsx")
+def export_xlsx(session: DatabaseSession) -> Response:
+    content = export_measurements_xlsx(session)
+    timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": f'attachment; filename="performance-cockpit-{timestamp}.xlsx"'
+        },
+    )
+
+
+@router.get("/report.pdf")
+def export_pdf(
+    session: DatabaseSession,
+    organizational_unit: Annotated[str, Query(min_length=1, max_length=120)],
+    date_from: date | None = None,
+    date_to: date | None = None,
+) -> Response:
+    content = export_dashboard_pdf(session, organizational_unit, date_from, date_to)
+    timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    return Response(
+        content=content,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="performance-cockpit-{timestamp}.pdf"'
         },
     )
 

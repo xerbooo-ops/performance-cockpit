@@ -2,7 +2,7 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 0.6 ergänzt lokale Zeitverläufe, Kennzahl-Drilldowns und den Vergleich von Organisationseinheiten.
+> **Projektstatus:** Release 0.7 ergänzt formatierte Excel-Exporte und lokale PDF-Berichte.
 
 ## Öffentliche Vorschau
 
@@ -10,7 +10,7 @@ Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages verö
 
 <https://xerbooo-ops.github.io/performance-cockpit/>
 
-Die Vorschau zeigt Release 0.6 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
+Die Vorschau zeigt Release 0.7 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
 der lokalen Windows-Anwendung.
 
 ## Technischer Stack
@@ -39,7 +39,7 @@ der lokalen Windows-Anwendung.
 ## Windows ohne Installation
 
 Der GitHub-Actions-Workflow `Build Windows standalone` erzeugt
-`PerformanceCockpit_v0.6_Windows.zip`. Nach dem Entpacken startet
+`PerformanceCockpit_v0.7_Windows.zip`. Nach dem Entpacken startet
 `PerformanceCockpit.exe` das Cockpit per Doppelklick.
 
 Zur Laufzeit werden kein Docker, Python, Node.js, PostgreSQL, Internetzugang, Cloud-Dienst oder
@@ -147,7 +147,13 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 
 ## Version
 
-Aktueller Projektstand: **0.6**
+Aktueller Projektstand: **0.7**
+
+## Kurz-Changelog 0.7
+
+- formatierter XLSX-Export aller Messwerte
+- lokaler PDF-Bericht für die aktive Auswahl
+- Downloads direkt aus dem Cockpit
 
 ## Kurz-Changelog 0.6
 
