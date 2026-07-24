@@ -14,4 +14,4 @@ class HealthResponse(BaseModel):
 
 @router.get("", response_model=HealthResponse, summary="Readiness check")
 def health() -> HealthResponse:
-    return HealthResponse(status="ok", service="performance-cockpit-api", version="0.4.0")
+    return HealthResponse(status="ok", service="performance-cockpit-api", version="0.5.0")

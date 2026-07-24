@@ -31,7 +31,9 @@ select {
 }
 
 button,
-.import-button {
+.import-button,
+.text-action,
+.management-card a {
   cursor: pointer;
 }
 
@@ -381,12 +383,172 @@ dd {
   font-size: 0.76rem;
 }
 
+.management-section,
+.history-section {
+  margin-top: 5rem;
+}
+
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.management-card {
+  display: flex;
+  min-height: 230px;
+  flex-direction: column;
+  align-items: start;
+  padding: 1.35rem;
+  border: 1px solid #dce5e0;
+  border-radius: 1.2rem;
+  background: rgb(255 255 255 / 80%);
+}
+
+.management-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 1.5rem;
+  place-items: center;
+  border-radius: 10px;
+  color: #176c53;
+  background: #def4eb;
+  font-size: 1.1rem;
+  font-weight: 850;
+}
+
+.management-card h3 {
+  margin-bottom: 0.55rem;
+  font-size: 1rem;
+}
+
+.management-card p {
+  margin-bottom: 1.25rem;
+  color: #748079;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.management-card a,
+.management-card button,
+.text-action {
+  margin-top: auto;
+  padding: 0;
+  border: 0;
+  color: #176c53;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.text-action input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.danger-card {
+  border-color: #ecd6d3;
+}
+
+.danger-card .management-icon {
+  color: #9b3732;
+  background: #fbe7e5;
+}
+
+.danger-card button {
+  color: #9b3732;
+}
+
+.history-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.history-item {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.5fr) 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #dce5e0;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.history-item > div:first-child {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.history-item > div:first-child span {
+  color: #849089;
+  font-size: 0.72rem;
+}
+
+.history-counts {
+  display: flex;
+  gap: 1rem;
+  color: #637069;
+  font-size: 0.78rem;
+}
+
+.failed {
+  color: #9b3732;
+}
+
+.history-status {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.history-status.completed {
+  color: #176c53;
+  background: #def4eb;
+}
+
+.history-status.completed_with_errors {
+  color: #8a5a0a;
+  background: #fff1cf;
+}
+
+.history-status.failed {
+  color: #9b3732;
+  background: #fbe7e5;
+}
+
+.history-item details {
+  grid-column: 1 / -1;
+  color: #7a3733;
+  font-size: 0.78rem;
+}
+
+.history-item summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.history-item ul {
+  margin: 0.7rem 0 0;
+  padding-left: 1.2rem;
+}
+
 @media (max-width: 850px) {
   .filter-panel {
     grid-template-columns: 1fr 1fr;
   }
 
   .metric-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .management-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -421,7 +583,20 @@ dd {
   }
 
   .filter-panel,
-  .metric-grid {
+  .metric-grid,
+  .management-grid {
     grid-template-columns: 1fr;
+  }
+
+  .history-item {
+    grid-template-columns: 1fr;
+  }
+
+  .history-counts {
+    justify-content: space-between;
+  }
+
+  .history-status {
+    justify-self: start;
   }
 }

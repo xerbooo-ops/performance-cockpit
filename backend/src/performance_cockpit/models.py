@@ -51,6 +51,7 @@ class ImportBatch(Base):
     total_rows: Mapped[int] = mapped_column(Integer, default=0)
     imported_rows: Mapped[int] = mapped_column(Integer, default=0)
     failed_rows: Mapped[int] = mapped_column(Integer, default=0)
+    error_details: Mapped[str] = mapped_column(Text, default="[]")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

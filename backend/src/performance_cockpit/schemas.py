@@ -59,6 +59,26 @@ class ImportResult(BaseModel):
     errors: list[ImportError] = Field(default_factory=list)
 
 
+class ImportBatchRead(BaseModel):
+    id: int
+    file_name: str
+    status: Literal["completed", "completed_with_errors", "failed"]
+    total_rows: int
+    imported_rows: int
+    failed_rows: int
+    created_at: datetime
+    errors: list[ImportError] = Field(default_factory=list)
+
+
+class ResetRequest(BaseModel):
+    confirmation: str
+
+
+class DataActionResult(BaseModel):
+    status: Literal["completed"]
+    message: str
+
+
 class DashboardFilters(BaseModel):
     organizational_units: list[str]
     period_start: date | None

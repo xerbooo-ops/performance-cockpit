@@ -47,13 +47,13 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 
 ## Release 0.5 – Lokale Datenverwaltung
 
-**Status:** geplant
+**Status:** abgeschlossen
 
 - Importhistorie und verständliche Fehleranzeige in der Oberfläche
-- Lokale Sicherung und Wiederherstellung
-- Datenexport und Zurücksetzen mit Sicherheitsabfrage
+- Lokale Sicherung und geprüfte Wiederherstellung
+- CSV-Datenexport und Zurücksetzen mit Sicherheitsabfrage
 - Schema-Migrationen für bestehende lokale Datenbanken
-- Signierter Windows-Installer zusätzlich zur portablen EXE
+- Aktualisiertes portables Windows-ZIP-Paket
 
 ## Release 1.0 – Produktiver Start
 
@@ -63,6 +63,7 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 - Barrierefreiheit, Performance und Sicherheit prüfen
 - Betriebs- und Supportdokumentation abschließen
 - Pilotbetrieb auf Windows 10/11 durchführen und Erkenntnisse einarbeiten
+- Signierten Windows-Installer ergänzen
 - Produktionsfreigabe und Release-Prozess etablieren
 
 ## Übergreifende Leitlinien

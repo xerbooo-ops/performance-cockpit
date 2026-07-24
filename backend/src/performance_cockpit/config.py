@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     database_url: str = Field(default_factory=default_database_url)
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     frontend_dir: Path | None = None
+    migrations_dir: Path | None = None
 
 
 @lru_cache

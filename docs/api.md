@@ -14,6 +14,11 @@ Die HTTP-API ist unter `/api/v1` versioniert. Die interaktive OpenAPI-Dokumentat
 | `GET` | `/api/v1/metrics` | Kennzahlendefinitionen auflisten |
 | `GET` | `/api/v1/metrics/{key}/measurements` | Messwerte filtern und auflisten |
 | `GET` | `/api/v1/metrics/{key}/summary` | Aggregierten Wert, Ziel, Abweichung und Zielerreichung berechnen |
+| `GET` | `/api/v1/data/imports` | Importhistorie mit gespeicherten Fehlern laden |
+| `GET` | `/api/v1/data/export.csv` | Alle Messwerte als CSV exportieren |
+| `GET` | `/api/v1/data/backup` | Lokale SQLite-Sicherung herunterladen |
+| `POST` | `/api/v1/data/restore` | Geprüfte SQLite-Sicherung wiederherstellen |
+| `POST` | `/api/v1/data/reset` | Lokale Daten nach Bestätigung zurücksetzen |
 
 ## Dashboard-Filter
 
@@ -46,3 +51,9 @@ GET /api/v1/metrics/handled_cases/summary?organizational_unit=Service%20Nord
 
 Fachliche Zeilenfehler führen zu einem Importstatus `completed_with_errors`; gültige Zeilen werden
 weiterhin verarbeitet.
+
+## Lokale Datenverwaltung
+
+Die Datenverwaltung ist für die eingebettete SQLite-Datenbank vorgesehen. Wiederherstellungen
+akzeptieren Cockpit-Backups bis 100 MB und prüfen Integrität sowie die erforderlichen Tabellen.
+Das Zurücksetzen erfordert den JSON-Wert `{"confirmation": "DELETE"}`.

@@ -35,14 +35,14 @@ async def import_file(
             return import_xlsx_bytes(session, file.filename, payload)
         except (OSError, ValueError, KeyError) as error:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="XLSX file could not be read",
             ) from error
     try:
         content = payload.decode("utf-8-sig")
     except UnicodeDecodeError as error:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="CSV file must be UTF-8 encoded",
         ) from error
     return import_csv_text(session, file.filename, content)
@@ -68,7 +68,7 @@ async def import_csv(
         content = payload.decode("utf-8-sig")
     except UnicodeDecodeError as error:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="CSV file must be UTF-8 encoded",
         ) from error
     return import_csv_text(session, file.filename, content)

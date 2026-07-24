@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 0.4. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
+Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 0.5. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
 
 ## Architekturüberblick
 
@@ -77,3 +77,6 @@ Die Continuous-Integration-Pipeline führt diese Prüfungen für Pull Requests u
 - Die Oberfläche öffnet sich beim Start automatisch im Standardbrowser.
 - Daten liegen unter `%LOCALAPPDATA%\PerformanceCockpit`.
 - Zur Laufzeit werden keine externen Dienste oder Internetressourcen aufgerufen.
+- Alembic-Migrationen aktualisieren bestehende lokale Datenbanken beim Start.
+- Export, Backup, Wiederherstellung und Zurücksetzen laufen ausschließlich auf dem Gerät.
+- Backups werden vor einer Wiederherstellung auf Integrität und Cockpit-Tabellen geprüft.

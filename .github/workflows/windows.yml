@@ -58,13 +58,13 @@ jobs:
       - name: Package release
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v0.4" -Force
-          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v0.4/"
-          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v0.4/"
-          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v0.4/README.txt"
-          Compress-Archive -Path "release/PerformanceCockpit_v0.4" -DestinationPath "release/PerformanceCockpit_v0.4_Windows.zip"
+          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v0.5" -Force
+          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v0.5/"
+          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v0.5/"
+          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v0.5/README.txt"
+          Compress-Archive -Path "release/PerformanceCockpit_v0.5" -DestinationPath "release/PerformanceCockpit_v0.5_Windows.zip"
       - uses: actions/upload-artifact@v4
         with:
-          name: PerformanceCockpit-v0.4-Windows
-          path: release/PerformanceCockpit_v0.4_Windows.zip
+          name: PerformanceCockpit-v0.5-Windows
+          path: release/PerformanceCockpit_v0.5_Windows.zip
           if-no-files-found: error

@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
 
 type MetricSummary = {
   metric_key: string;
@@ -30,6 +30,23 @@ type ImportResult = {
   status: "completed" | "completed_with_errors" | "failed";
   imported_rows: number;
   failed_rows: number;
+};
+
+type ImportError = {
+  row: number;
+  field: string | null;
+  message: string;
+};
+
+type ImportRecord = {
+  id: number;
+  file_name: string;
+  status: "completed" | "completed_with_errors" | "failed";
+  total_rows: number;
+  imported_rows: number;
+  failed_rows: number;
+  created_at: string;
+  errors: ImportError[];
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
@@ -71,6 +88,19 @@ const demoDashboard: DashboardData = {
   ],
 };
 
+const demoHistory: ImportRecord[] = [
+  {
+    id: 1,
+    file_name: "sample_kpi_measurements.csv",
+    status: "completed",
+    total_rows: 8,
+    imported_rows: 8,
+    failed_rows: 0,
+    created_at: "2026-07-24T09:30:00",
+    errors: [],
+  },
+];
+
 function formatNumber(value: string, unit: string) {
   return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 }).format(Number(value))} ${
     unit === "Prozent" ? "%" : unit
@@ -87,10 +117,12 @@ function App() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [history, setHistory] = useState<ImportRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [importMessage, setImportMessage] = useState("");
   const [importing, setImporting] = useState(false);
+  const [managing, setManaging] = useState(false);
 
   const loadDashboard = useCallback(async (selectedUnit: string, from: string, to: string) => {
     if (!selectedUnit) {
@@ -118,6 +150,16 @@ function App() {
     }
   }, []);
 
+  const loadHistory = useCallback(async () => {
+    if (DEMO_MODE) {
+      setHistory(demoHistory);
+      return;
+    }
+    const response = await fetch(`${API_BASE}/data/imports`);
+    if (!response.ok) throw new Error("Importhistorie konnte nicht geladen werden.");
+    setHistory((await response.json()) as ImportRecord[]);
+  }, []);
+
   const loadFilters = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -132,16 +174,15 @@ function App() {
       setDateTo(loadedFilters.period_end ?? "");
       const firstUnit = loadedFilters.organizational_units[0] ?? "";
       setUnit(firstUnit);
-      await loadDashboard(
-        firstUnit,
-        loadedFilters.period_start ?? "",
-        loadedFilters.period_end ?? "",
-      );
+      await Promise.all([
+        loadDashboard(firstUnit, loadedFilters.period_start ?? "", loadedFilters.period_end ?? ""),
+        loadHistory(),
+      ]);
     } catch {
       setError("Daten konnten nicht geladen werden. Bitte Anwendung neu starten.");
       setLoading(false);
     }
-  }, [loadDashboard]);
+  }, [loadDashboard, loadHistory]);
 
   useEffect(() => {
     void loadFilters();
@@ -181,6 +222,69 @@ function App() {
     void loadDashboard(unit, dateFrom, dateTo);
   }
 
+  function handleLocalDownload(event: MouseEvent<HTMLAnchorElement>) {
+    if (!DEMO_MODE) return;
+    event.preventDefault();
+    setImportMessage("Export und Backup sind in der lokalen Windows-Version verfügbar.");
+  }
+
+  async function handleRestore(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (DEMO_MODE) {
+      setImportMessage("Die Wiederherstellung ist in der lokalen Windows-Version verfügbar.");
+      return;
+    }
+    setManaging(true);
+    setError("");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const response = await fetch(`${API_BASE}/data/restore`, { method: "POST", body });
+      if (!response.ok) throw new Error("Das Backup konnte nicht wiederhergestellt werden.");
+      setImportMessage("Backup wiederhergestellt.");
+      await loadFilters();
+    } catch (restoreError) {
+      setError(
+        restoreError instanceof Error ? restoreError.message : "Wiederherstellung fehlgeschlagen.",
+      );
+    } finally {
+      setManaging(false);
+    }
+  }
+
+  async function handleReset() {
+    if (DEMO_MODE) {
+      setImportMessage("Das Zurücksetzen ist in der lokalen Windows-Version verfügbar.");
+      return;
+    }
+    const confirmation = window.prompt(
+      "Alle lokalen Kennzahlen und Importe werden gelöscht. Zum Bestätigen DELETE eingeben:",
+    );
+    if (confirmation === null) return;
+    if (confirmation !== "DELETE") {
+      setError("Zurücksetzen abgebrochen: Bestätigung war nicht DELETE.");
+      return;
+    }
+    setManaging(true);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE}/data/reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmation }),
+      });
+      if (!response.ok) throw new Error("Die lokalen Daten konnten nicht zurückgesetzt werden.");
+      setImportMessage("Alle lokalen Daten wurden gelöscht.");
+      await loadFilters();
+    } catch (resetError) {
+      setError(resetError instanceof Error ? resetError.message : "Zurücksetzen fehlgeschlagen.");
+    } finally {
+      setManaging(false);
+    }
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -188,7 +292,7 @@ function App() {
           <span className="brand-mark">PC</span>
           <div>
             <strong>Performance Cockpit</strong>
-            <span>Release 0.4 · lokal & unabhängig</span>
+            <span>Release 0.5 · lokale Datenkontrolle</span>
           </div>
         </div>
         <label className={`import-button ${importing ? "disabled" : ""}`}>
@@ -323,6 +427,116 @@ function App() {
             <span>Quelle: {dashboard.source_files.join(", ") || "keine"}</span>
           </footer>
         )}
+
+        <section className="management-section" aria-labelledby="management-heading">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Lokale Datenverwaltung</p>
+              <h2 id="management-heading">Deine Daten. Deine Kontrolle.</h2>
+            </div>
+          </div>
+          <div className="management-grid">
+            <article className="management-card">
+              <span className="management-icon" aria-hidden="true">
+                ↗
+              </span>
+              <h3>Daten exportieren</h3>
+              <p>Alle Messwerte als wiederverwendbare CSV-Datei sichern.</p>
+              <a href={`${API_BASE}/data/export.csv`} onClick={handleLocalDownload}>
+                CSV herunterladen
+              </a>
+            </article>
+            <article className="management-card">
+              <span className="management-icon" aria-hidden="true">
+                ◫
+              </span>
+              <h3>Backup</h3>
+              <p>Eine vollständige Kopie der lokalen Cockpit-Datenbank erstellen.</p>
+              <a href={`${API_BASE}/data/backup`} onClick={handleLocalDownload}>
+                Backup speichern
+              </a>
+            </article>
+            <article className="management-card">
+              <span className="management-icon" aria-hidden="true">
+                ↻
+              </span>
+              <h3>Wiederherstellen</h3>
+              <p>Ein geprüftes Performance-Cockpit-Backup lokal einspielen.</p>
+              <label className={`text-action ${managing ? "disabled" : ""}`}>
+                <input type="file" accept=".db" onChange={handleRestore} disabled={managing} />
+                Backup auswählen
+              </label>
+            </article>
+            <article className="management-card danger-card">
+              <span className="management-icon" aria-hidden="true">
+                ×
+              </span>
+              <h3>Daten zurücksetzen</h3>
+              <p>Alle Kennzahlen und Importprotokolle nach Bestätigung löschen.</p>
+              <button type="button" onClick={() => void handleReset()} disabled={managing}>
+                Lokal zurücksetzen
+              </button>
+            </article>
+          </div>
+        </section>
+
+        <section className="history-section" aria-labelledby="history-heading">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Nachvollziehbarkeit</p>
+              <h2 id="history-heading">Importhistorie</h2>
+            </div>
+            <span className="period">{history.length} Importe</span>
+          </div>
+          {history.length ? (
+            <div className="history-list">
+              {history.map((record) => (
+                <article className="history-item" key={record.id}>
+                  <div>
+                    <strong>{record.file_name}</strong>
+                    <span>
+                      {new Intl.DateTimeFormat("de-DE", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      }).format(new Date(record.created_at))}
+                    </span>
+                  </div>
+                  <div className="history-counts">
+                    <span>{record.imported_rows} importiert</span>
+                    <span className={record.failed_rows ? "failed" : ""}>
+                      {record.failed_rows} fehlerhaft
+                    </span>
+                  </div>
+                  <span className={`history-status ${record.status}`}>
+                    {record.status === "completed"
+                      ? "Erfolgreich"
+                      : record.status === "failed"
+                        ? "Fehlgeschlagen"
+                        : "Mit Hinweisen"}
+                  </span>
+                  {record.errors.length > 0 && (
+                    <details>
+                      <summary>Fehler anzeigen</summary>
+                      <ul>
+                        {record.errors.map((item, index) => (
+                          <li key={`${item.row}-${item.field}-${index}`}>
+                            Zeile {item.row}
+                            {item.field ? ` · ${item.field}` : ""}: {item.message}
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="state-card empty">
+              <strong>Noch keine Importe vorhanden.</strong>
+              <span>Neue Dateiimporte erscheinen automatisch an dieser Stelle.</span>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

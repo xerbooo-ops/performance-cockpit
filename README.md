@@ -2,7 +2,7 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 0.4 verbindet das Cockpit mit CSV-/Excel-Import und legt die Grundlage für den vollständig lokalen Windows-Betrieb.
+> **Projektstatus:** Release 0.5 ergänzt die vollständig lokale Datenverwaltung mit Importhistorie, Export, Backup, Wiederherstellung und sicherem Zurücksetzen.
 
 ## Öffentliche Vorschau
 
@@ -10,7 +10,7 @@ Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages verö
 
 <https://xerbooo-ops.github.io/performance-cockpit/>
 
-Die Vorschau zeigt Release 0.4 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
+Die Vorschau zeigt Release 0.5 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
 der lokalen Windows-Anwendung.
 
 ## Technischer Stack
@@ -39,7 +39,7 @@ der lokalen Windows-Anwendung.
 ## Windows ohne Installation
 
 Der GitHub-Actions-Workflow `Build Windows standalone` erzeugt
-`PerformanceCockpit_v0.4_Windows.zip`. Nach dem Entpacken startet
+`PerformanceCockpit_v0.5_Windows.zip`. Nach dem Entpacken startet
 `PerformanceCockpit.exe` das Cockpit per Doppelklick.
 
 Zur Laufzeit werden kein Docker, Python, Node.js, PostgreSQL, Internetzugang, Cloud-Dienst oder
@@ -147,11 +147,12 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 
 ## Version
 
-Aktueller Projektstand: **0.4**
+Aktueller Projektstand: **0.5**
 
-## Kurz-Changelog 0.4
+## Kurz-Changelog 0.5
 
-- Dashboard mit KPI-Karten, Filtern und Datenstatus
-- CSV- und XLSX-Import aus der Oberfläche
-- eingebettete lokale SQLite-Datenbank
-- portable Windows-EXE und automatisiertes ZIP-Paket
+- Importhistorie mit verständlichen Zeilen- und Feldfehlern
+- lokaler CSV-Gesamtexport
+- vollständiges SQLite-Backup und geprüfte Wiederherstellung
+- geschütztes Zurücksetzen aller lokalen Daten
+- automatische Migration bestehender Release-0.4-Datenbanken

@@ -9,7 +9,10 @@ analysis = Analysis(
     ["src/performance_cockpit/standalone.py"],
     pathex=[str(backend_dir / "src")],
     binaries=[],
-    datas=[(str(frontend_dist), "frontend")],
+    datas=[
+        (str(frontend_dist), "frontend"),
+        (str(backend_dir / "migrations"), "migrations"),
+    ],
     hiddenimports=["uvicorn.logging", "uvicorn.loops.auto", "uvicorn.protocols.http.auto"],
     hookspath=[],
     hooksconfig={},

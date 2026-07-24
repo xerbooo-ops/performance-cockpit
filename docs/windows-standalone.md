@@ -1,4 +1,4 @@
-Performance Cockpit v0.4 – Windows
+Performance Cockpit v0.5 – Windows
 
 Start:
 1. ZIP-Datei vollständig entpacken.
@@ -12,6 +12,9 @@ Daten:
 - CSV- oder XLSX-Datei über „Daten importieren“ auswählen.
 - Eine Beispieldatei liegt im selben Ordner.
 - Die lokale Datenbank liegt unter %LOCALAPPDATA%\PerformanceCockpit.
+- CSV-Export, vollständiges Backup und Wiederherstellung stehen unter „Lokale Datenverwaltung“ bereit.
+- Beim Zurücksetzen muss zur Sicherheit DELETE eingegeben werden.
+- Bestehende Daten aus Version 0.4 werden beim ersten Start automatisch aktualisiert.
 
 Beenden:
 Das Fenster der Anwendung schließen. Falls kein Fenster sichtbar ist, den Prozess

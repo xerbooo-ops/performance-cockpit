@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 from datetime import date
 from decimal import Decimal
 from typing import Literal
@@ -85,6 +86,10 @@ def import_csv_text(session: Session, file_name: str, content: str) -> ImportRes
             )
         ]
         batch.failed_rows = 1
+        batch.error_details = json.dumps(
+            [error.model_dump() for error in errors],
+            ensure_ascii=False,
+        )
         session.commit()
         return ImportResult(
             batch_id=batch.id,
@@ -157,6 +162,10 @@ def import_csv_text(session: Session, file_name: str, content: str) -> ImportRes
     batch.total_rows = total_rows
     batch.imported_rows = imported_rows
     batch.failed_rows = failed_rows
+    batch.error_details = json.dumps(
+        [error.model_dump() for error in errors],
+        ensure_ascii=False,
+    )
     session.commit()
 
     return ImportResult(

@@ -8,5 +8,5 @@ def test_health_endpoint_reports_service_status(client: TestClient) -> None:
     assert response.json() == {
         "status": "ok",
         "service": "performance-cockpit-api",
-        "version": "0.4.0",
+        "version": "0.5.0",
     }
