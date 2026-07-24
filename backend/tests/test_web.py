@@ -11,9 +11,11 @@ def test_python_dashboard_renders_without_frontend_build(client: TestClient) -> 
 
     assert response.status_code == 200
     assert "Performance Cockpit" in response.text
-    assert "Python-only" in response.text
-    assert "TypeScript" in response.text
-    assert 'action="/web/import"' in response.text
+    assert "Python-only · EPA-Anonymisierung" not in response.text
+    assert "Ohne Node.js, TypeScript oder externe Dienste." not in response.text
+    assert "● vollständig lokal" not in response.text
+    assert 'action="/web/import"' not in response.text
+    assert "Datei importieren" not in response.text
     assert 'http-equiv="refresh"' in response.text
     assert "Reportdatei auswählen" in response.text
     assert "alle 5 Sekunden geprüft" in response.text

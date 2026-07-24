@@ -37,13 +37,11 @@ MAX_BACKUP_BYTES = 100 * 1024 * 1024
 
 STYLES = """
 :root{font-family:Inter,Segoe UI,sans-serif;color:#17352d;background:#f4f7f5}
-*{box-sizing:border-box}body{margin:0}.topbar{background:#123d34;color:white;padding:1rem 5vw;
-display:flex;justify-content:space-between;align-items:center}.topbar span{display:block;
-color:#b9d9d0;
-font-size:.85rem}main{width:min(1180px,92vw);margin:2rem auto}.hero,.panel,.card{background:white;
+*{box-sizing:border-box}body{margin:0}.topbar{background:#123d34;color:white;padding:1rem 5vw}
+main{width:min(1180px,92vw);margin:2rem auto}.hero,.panel,.card{background:white;
 border:1px solid #dce7e2;border-radius:18px;box-shadow:0 16px 45px #1c3f3312}.hero{padding:2rem;
-margin-bottom:1rem}.hero h1{font-size:clamp(2rem,5vw,4rem);margin:.2rem 0}.badge{color:#176c53;
-font-weight:700}.panel{padding:1rem;margin:1rem 0}form{display:flex;flex-wrap:wrap;gap:.8rem;
+margin-bottom:1rem}.hero h1{font-size:clamp(2rem,5vw,4rem);margin:.2rem 0}.panel{padding:1rem;
+margin:1rem 0}form{display:flex;flex-wrap:wrap;gap:.8rem;
 align-items:end}label{display:grid;gap:.35rem;font-weight:700}input,select,button,.button{font:inherit;
 padding:.7rem .9rem;border-radius:10px;border:1px solid #b8ccc5;background:white}button,.button{
 background:#176c53;color:white;border:0;text-decoration:none;font-weight:700;cursor:pointer}.grid{
@@ -169,13 +167,8 @@ def dashboard_page(
 content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="10">
 <title>Performance Cockpit</title>
 <style>{STYLES}</style></head><body>
-<header class="topbar"><div><strong>Performance Cockpit</strong>
-<span>Python-only · EPA-Anonymisierung</span></div>
-<form action="/web/import" method="post" enctype="multipart/form-data">
-<label>Datei importieren<input name="file" type="file" accept=".csv,.xlsx" required></label>
-<button type="submit">Importieren</button></form></header>
-<main><section class="hero"><span class="badge">● vollständig lokal</span>
-<h1>Leistung auf einen Blick.</h1><p>Ohne Node.js, TypeScript oder externe Dienste.</p></section>
+<header class="topbar"><strong>Performance Cockpit</strong></header>
+<main><section class="hero"><h1>Leistung auf einen Blick.</h1></section>
 {notice}
 <section class="panel"><h2>Automatische Aktualisierung</h2>
 <p>{watch_status}</p>{watch_error}<div class="actions">
