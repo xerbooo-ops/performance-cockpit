@@ -136,7 +136,8 @@ describe("App", () => {
       await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Qualitätsquote", level: 3 })).toBeInTheDocument();
-    expect(screen.getByText("ohne Ziel")).toBeInTheDocument();
+    expect(screen.queryByText("Ziel")).not.toBeInTheDocument();
+    expect(screen.queryByText("ohne Ziel")).not.toBeInTheDocument();
     expect(screen.getByText("Mit Hinweisen")).toBeInTheDocument();
     expect(screen.getByText("Erfolgreich")).toBeInTheDocument();
     expect(screen.getByText("Fehlgeschlagen")).toBeInTheDocument();

@@ -72,13 +72,13 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 
 const demoFilters: DashboardFilters = {
-  organizational_units: ["Service Nord", "Service Süd"],
+  organizational_units: ["EPA-1001", "EPA-1002", "Potsdam"],
   period_start: "2026-07-01",
   period_end: "2026-07-14",
 };
 
 const demoDashboard: DashboardData = {
-  organizational_unit: "Service Nord",
+  organizational_unit: "EPA-1001",
   period_start: "2026-07-01",
   period_end: "2026-07-14",
   last_imported_at: "2026-07-24T09:30:00",
@@ -89,9 +89,9 @@ const demoDashboard: DashboardData = {
       display_name: "Bearbeitete Vorgänge",
       unit: "Anzahl",
       value: "205.00",
-      target_value: "200.00",
-      deviation: "5.00",
-      attainment_percent: "102.50",
+      target_value: null,
+      deviation: null,
+      attainment_percent: null,
       measurement_count: 2,
     },
     {
@@ -99,9 +99,9 @@ const demoDashboard: DashboardData = {
       display_name: "Qualitätsquote",
       unit: "Prozent",
       value: "92.25",
-      target_value: "90.00",
-      deviation: "2.25",
-      attainment_percent: "102.50",
+      target_value: null,
+      deviation: null,
+      attainment_percent: null,
       measurement_count: 2,
     },
   ],
@@ -124,21 +124,21 @@ const demoMeasurements: Measurement[] = [
   {
     id: 1,
     metric_key: "handled_cases",
-    organizational_unit: "Service Nord",
+    organizational_unit: "EPA-1001",
     period_start: "2026-07-01",
     period_end: "2026-07-07",
     value: "110",
-    target_value: "100",
+    target_value: null,
     source: "sample_kpi_measurements.csv",
   },
   {
     id: 2,
     metric_key: "handled_cases",
-    organizational_unit: "Service Nord",
+    organizational_unit: "EPA-1001",
     period_start: "2026-07-08",
     period_end: "2026-07-14",
     value: "95",
-    target_value: "100",
+    target_value: null,
     source: "sample_kpi_measurements.csv",
   },
 ];
@@ -147,13 +147,12 @@ const demoComparison: OrganizationComparison = {
   metric_key: "handled_cases",
   display_name: "Bearbeitete Vorgänge",
   unit: "Anzahl",
-  entries: [
-    demoDashboard.summaries[0],
-    { ...demoDashboard.summaries[0], value: "175", attainment_percent: "87.50" },
-  ].map((entry, index) => ({
-    ...entry,
-    organizational_unit: index === 0 ? "Service Nord" : "Service Süd",
-  })) as MetricSummary[],
+  entries: [demoDashboard.summaries[0], { ...demoDashboard.summaries[0], value: "175" }].map(
+    (entry, index) => ({
+      ...entry,
+      organizational_unit: index === 0 ? "EPA-1001" : "EPA-1002",
+    }),
+  ) as MetricSummary[],
 };
 
 function formatNumber(value: string, unit: string) {
@@ -401,7 +400,7 @@ function App() {
           <span className="brand-mark">PC</span>
           <div>
             <strong>Performance Cockpit</strong>
-            <span>Release 1.0.1 · Excel-Kompatibilität</span>
+            <span>Release 1.0.2 · EPA-Anonymisierung</span>
           </div>
         </div>
         <label className={`import-button ${importing ? "disabled" : ""}`}>
@@ -416,7 +415,7 @@ function App() {
             <p className="eyebrow">Cockpit MVP</p>
             <h1>Leistung auf einen Blick.</h1>
             <p className="hero-copy">
-              Kennzahlen filtern, Zielerreichung prüfen und neue Excel- oder CSV-Daten direkt
+              Kennzahlen anonymisiert über EPA filtern und neue Excel- oder CSV-Daten direkt
               einlesen.
             </p>
           </div>
@@ -483,32 +482,15 @@ function App() {
           ) : dashboard?.summaries.length ? (
             <div className="metric-grid">
               {dashboard.summaries.map((metric) => {
-                const attainment = Number(metric.attainment_percent ?? 0);
                 return (
                   <article className="metric-card" key={metric.metric_key}>
                     <div className="metric-title">
                       <h3>{metric.display_name}</h3>
-                      <span className={attainment >= 100 ? "positive" : "warning"}>
-                        {metric.attainment_percent
-                          ? `${new Intl.NumberFormat("de-DE").format(attainment)} %`
-                          : "ohne Ziel"}
-                      </span>
                     </div>
                     <strong className="metric-value">
                       {formatNumber(metric.value, metric.unit)}
                     </strong>
-                    <div className="progress" aria-label={`Zielerreichung ${attainment} Prozent`}>
-                      <span style={{ width: `${Math.min(attainment, 100)}%` }} />
-                    </div>
                     <dl>
-                      <div>
-                        <dt>Ziel</dt>
-                        <dd>
-                          {metric.target_value
-                            ? formatNumber(metric.target_value, metric.unit)
-                            : "Nicht definiert"}
-                        </dd>
-                      </div>
                       <div>
                         <dt>Messwerte</dt>
                         <dd>{metric.measurement_count}</dd>

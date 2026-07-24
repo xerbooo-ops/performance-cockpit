@@ -178,8 +178,7 @@ def export_dashboard_pdf(
     ]
     lines.extend(
         (
-            f"{summary.display_name}: {summary.value} {summary.unit} "
-            f"(Ziel: {summary.target_value if summary.target_value is not None else '-'})",
+            f"{summary.display_name}: {summary.value} {summary.unit}",
             11,
         )
         for summary in dashboard.summaries[:25]

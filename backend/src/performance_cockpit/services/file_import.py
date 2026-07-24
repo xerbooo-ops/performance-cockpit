@@ -93,13 +93,8 @@ def _find_wide_header(worksheet: Worksheet) -> int | None:
 
 
 def _organization_name(values: dict[str, object]) -> str:
-    employee = str(values.get("mitarbeiter") or "").strip()
-    epa = str(values.get("epa") or "").strip()
-    team_lead = str(values.get("teamleiter") or "").strip()
-    identity = employee or (f"EPA {epa}" if epa else "")
-    if team_lead and identity:
-        return f"{team_lead} · {identity}"
-    return identity or team_lead
+    # Employee and team-lead names are deliberately ignored and never persisted.
+    return str(values.get("epa") or "").strip()
 
 
 def _metric_value(cell: Cell, header: str) -> Decimal | None:
@@ -151,6 +146,31 @@ def _wide_rows(
                 }
             )
     return rows
+
+
+def _potsdam_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    grouped: dict[str, list[dict[str, object]]] = {}
+    for row in rows:
+        grouped.setdefault(str(row["metric_key"]), []).append(row)
+
+    totals: list[dict[str, object]] = []
+    for metric_rows in grouped.values():
+        first = metric_rows[0]
+        values = [Decimal(str(row["value"])) for row in metric_rows]
+        value = (
+            sum(values, Decimal()) / len(values)
+            if first["aggregation"] == "average"
+            else sum(values, Decimal())
+        )
+        totals.append(
+            {
+                **first,
+                "description": f"{first['metric_name']} kumuliert für Potsdam",
+                "organizational_unit": "Potsdam",
+                "value": value,
+            }
+        )
+    return totals
 
 
 def _summary_rows(
@@ -236,11 +256,14 @@ def _wide_workbook_csv(worksheet: Worksheet) -> str | None:
     if header_row is None:
         return None
     period = date.today()
-    rows = _wide_rows(worksheet, header_row, period)
-    if not rows:
+    employee_rows = _wide_rows(worksheet, header_row, period)
+    if employee_rows:
+        rows = [*employee_rows, *_potsdam_rows(employee_rows)]
+        history_organization = "Potsdam"
+    else:
         rows = _summary_rows(worksheet, header_row, period)
-    organization = str(next((row["organizational_unit"] for row in rows), "Gesamt"))
-    rows.extend(_historical_rows(worksheet, organization))
+        history_organization = str(next((row["organizational_unit"] for row in rows), "Potsdam"))
+    rows.extend(_historical_rows(worksheet, history_organization))
     output = io.StringIO()
     writer = csv.DictWriter(
         output,

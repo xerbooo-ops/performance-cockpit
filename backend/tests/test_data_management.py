@@ -56,6 +56,7 @@ def test_history_export_and_confirmed_reset(client: TestClient) -> None:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     assert pdf.content.startswith(b"%PDF-1.4")
+    assert b"Ziel" not in pdf.content
     assert pdf.headers["content-type"] == "application/pdf"
     assert rejected_reset.status_code == 422
     assert accepted_reset.status_code == 200

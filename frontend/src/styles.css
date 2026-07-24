@@ -287,43 +287,11 @@ h2 {
   font-size: 0.95rem;
 }
 
-.metric-title span {
-  padding: 0.3rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.68rem;
-  font-weight: 850;
-}
-
-.positive {
-  color: #176c53;
-  background: #def4eb;
-}
-
-.warning {
-  color: #8a5a0a;
-  background: #fff1cf;
-}
-
 .metric-value {
   display: block;
   margin-bottom: 1.1rem;
   font-size: clamp(2rem, 4vw, 3rem);
   letter-spacing: -0.05em;
-}
-
-.progress {
-  height: 6px;
-  margin-bottom: 1.3rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #e9efec;
-}
-
-.progress span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: #299676;
 }
 
 dl {

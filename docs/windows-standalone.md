@@ -1,4 +1,4 @@
-Performance Cockpit v1.0.1 – Windows
+Performance Cockpit v1.0.2 – Windows
 
 Start:
 1. ZIP-Datei vollständig entpacken.
@@ -10,6 +10,9 @@ Internetzugang noch Docker, Python, Node.js oder PostgreSQL.
 
 Daten:
 - CSV- oder XLSX-Datei über „Daten importieren“ auswählen.
+- Im Performance-Report werden Teamleiter- und Mitarbeiternamen ignoriert und nicht gespeichert.
+- Die Auswahl erfolgt ausschließlich über EPA; „Potsdam“ enthält die kumulierten Gesamtwerte.
+- Zielwerte werden im Dashboard und PDF-Bericht zunächst nicht angezeigt.
 - Eine Beispieldatei liegt im selben Ordner.
 - Die lokale Datenbank liegt unter %LOCALAPPDATA%\PerformanceCockpit.
 - CSV-Export, vollständiges Backup und Wiederherstellung stehen unter „Lokale Datenverwaltung“ bereit.

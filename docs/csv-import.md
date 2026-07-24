@@ -20,7 +20,7 @@ CSV-Dateien und normierte XLSX-Dateien enthalten folgende Spalten:
 | `period_start` | Start als ISO-Datum | `2026-07-01` |
 | `period_end` | Ende als ISO-Datum | `2026-07-07` |
 | `value` | Ist-Wert | `110` |
-| `target_value` | Optionaler Zielwert | `100` |
+| `target_value` | Optionaler Zielwert; derzeit nicht im Dashboard oder PDF sichtbar | `100` |
 
 Die maximale Dateigröße beträgt 5 MB. Eine Beispieldatei liegt unter
 [`data/sample_kpi_measurements.csv`](../data/sample_kpi_measurements.csv).
@@ -38,10 +38,14 @@ Tabelle erst nach Übersichts- und Monatszeilen beginnt. Er sucht die Kopfzeile 
 | `TNPS`, `CS` | Punkte |
 | `CHT`, `AHT`, `ACW` | Sekunden |
 
-Ausgefüllte Mitarbeiterzeilen werden je Mitarbeiter beziehungsweise EPA importiert. Sind sie leer,
-wird die Tageszusammenfassung – beispielsweise `Potsdam` – verwendet. Ein oberhalb der Tabelle
-angegebener Monatsverlauf für AHT und ACW wird ebenfalls übernommen. Leere Zellen und Excel-Fehler
-wie `#DIV/0!` werden übersprungen.
+Ausgefüllte Mitarbeiterzeilen werden ausschließlich unter ihrer EPA-Kennung importiert.
+Teamleiter- und Mitarbeiternamen werden ignoriert, nicht gespeichert und nicht an das Dashboard
+übergeben. Zusätzlich berechnet der Import aus allen Mitarbeiterzeilen die Organisationseinheit
+`Potsdam`: Anzahl-KPI werden summiert, Quoten-, Punkte- und Zeit-KPI arithmetisch gemittelt.
+
+Sind Mitarbeiterzeilen leer, wird die vorhandene Tageszusammenfassung – beispielsweise `Potsdam` –
+verwendet. Ein oberhalb der Tabelle angegebener Monatsverlauf für AHT und ACW wird ebenfalls
+`Potsdam` zugeordnet. Leere Zellen und Excel-Fehler wie `#DIV/0!` werden übersprungen.
 
 ## Import in der Anwendung
 

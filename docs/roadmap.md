@@ -98,6 +98,16 @@ Windows-10-/11-Systemen und – sobald ein Zertifikat vorliegt – die digitale 
 - Monatlichen AHT-/ACW-Verlauf übernehmen
 - Leere Zellen und Excel-Fehlerwerte sicher überspringen
 
+## Release 1.0.2 – EPA-Anonymisierung
+
+**Status:** abgeschlossen
+
+- Teamleiter- und Mitarbeiternamen beim Reportimport vollständig verwerfen
+- Individuelle Kennzahlen ausschließlich über EPA auswählbar machen
+- `Potsdam` als kumulierte Gesamteinheit aller Mitarbeiter berechnen
+- Anzahl-KPI summieren und Quoten-, Punkte- sowie Zeit-KPI mitteln
+- Zielangaben aus Dashboard und PDF-Bericht entfernen
+
 ## Übergreifende Leitlinien
 
 Für jedes Release gelten:

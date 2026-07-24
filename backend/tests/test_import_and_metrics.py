@@ -218,31 +218,55 @@ def test_xlsx_import_accepts_original_wide_employee_report(client: TestClient) -
     ]
     for column, header in enumerate(headers, start=2):
         sheet.cell(11, column, header)
-    values = [
-        "TL Nord",
-        "Erika Muster",
-        "4711",
-        2,
-        1,
-        0,
-        1,
-        5,
-        0.5,
-        20,
-        0.25,
-        8,
-        42,
-        90,
-        0.8,
-        0.1,
-        365,
-        64,
-        0.75,
+    employee_rows = [
+        [
+            "TL Nord",
+            "Erika Muster",
+            "4711",
+            2,
+            1,
+            0,
+            1,
+            5,
+            0.5,
+            20,
+            0.25,
+            8,
+            42,
+            90,
+            0.8,
+            0.1,
+            365,
+            64,
+            0.75,
+        ],
+        [
+            "TL Süd",
+            "Max Beispiel",
+            "8150",
+            3,
+            2,
+            1,
+            0,
+            7,
+            0.7,
+            30,
+            0.75,
+            10,
+            50,
+            80,
+            0.6,
+            0.2,
+            335,
+            56,
+            0.65,
+        ],
     ]
-    for column, value in enumerate(values, start=2):
-        sheet.cell(12, column, value)
-    for column in (10, 12, 16, 17, 20):
-        sheet.cell(12, column).number_format = "0.00%"
+    for row_number, values in enumerate(employee_rows, start=12):
+        for column, value in enumerate(values, start=2):
+            sheet.cell(row_number, column, value)
+        for column in (10, 12, 16, 17, 20):
+            sheet.cell(row_number, column).number_format = "0.00%"
     content = BytesIO()
     workbook.save(content)
 
@@ -259,14 +283,28 @@ def test_xlsx_import_accepts_original_wide_employee_report(client: TestClient) -
 
     assert response.status_code == 200
     assert response.json()["status"] == "completed"
-    assert response.json()["imported_rows"] == 16
+    assert response.json()["imported_rows"] == 48
     filters = client.get("/api/v1/metrics/dashboard/filters").json()
-    assert filters["organizational_units"] == ["TL Nord · Erika Muster"]
+    assert filters["organizational_units"] == ["4711", "8150", "Potsdam"]
+    assert "Erika Muster" not in str(filters)
+    assert "Max Beispiel" not in str(filters)
+    assert "TL Nord" not in str(filters)
+    assert "TL Süd" not in str(filters)
     offer_rate = client.get(
         "/api/v1/metrics/offer_rate/summary",
-        params={"organizational_unit": "TL Nord · Erika Muster"},
+        params={"organizational_unit": "4711"},
     )
     assert offer_rate.json()["value"] == "50.00"
+    potsdam_vvl = client.get(
+        "/api/v1/metrics/vvl/summary",
+        params={"organizational_unit": "Potsdam"},
+    )
+    potsdam_bbcr = client.get(
+        "/api/v1/metrics/bbcr/summary",
+        params={"organizational_unit": "Potsdam"},
+    )
+    assert potsdam_vvl.json()["value"] == "5.00"
+    assert potsdam_bbcr.json()["value"] == "50.00"
 
 
 def test_xlsx_import_falls_back_to_wide_daily_summary(client: TestClient) -> None:

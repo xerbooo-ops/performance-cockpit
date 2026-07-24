@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 1.0.1. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
+Dieses Dokument beschreibt die Architektur des Performance Cockpits ab Release 1.0.2. Die wesentlichen Technologieentscheidungen sind in den [Architecture Decision Records](adr/) dokumentiert.
 
 ## Architekturüberblick
 
@@ -49,6 +49,8 @@ flowchart LR
 - Die API beginnt unter `/api/v1` und wird bei inkompatiblen Änderungen versioniert.
 - Pydantic-Modelle definieren und dokumentieren Request- und Response-Verträge.
 - Eingehende Daten werden vor der Verarbeitung validiert.
+- Personenbezogene Spalten des Performance-Reports werden vor der Persistenz verworfen.
+- EPA ist die einzige individuelle Organisationseinheit; Potsdam wird im Import kumuliert.
 - Kennzahlberechnungen erfolgen zentral im Backend, nicht parallel im Frontend.
 - Importfehler werden zeilen- und feldbezogen maschinenlesbar ausgegeben.
 
