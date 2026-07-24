@@ -92,3 +92,10 @@ class DashboardData(BaseModel):
     last_imported_at: datetime | None
     source_files: list[str]
     summaries: list[MetricSummary]
+
+
+class OrganizationComparison(BaseModel):
+    metric_key: str
+    display_name: str
+    unit: str
+    entries: list[MetricSummary]

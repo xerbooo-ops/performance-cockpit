@@ -5,7 +5,12 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
 
 from performance_cockpit.models import ImportBatch, Measurement, MetricDefinition
-from performance_cockpit.schemas import DashboardData, DashboardFilters, MetricSummary
+from performance_cockpit.schemas import (
+    DashboardData,
+    DashboardFilters,
+    MetricSummary,
+    OrganizationComparison,
+)
 
 PRECISION = Decimal("0.01")
 
@@ -132,4 +137,31 @@ def get_dashboard(
         last_imported_at=last_imported_at,
         source_files=sources,
         summaries=summaries,
+    )
+
+
+def get_comparison(
+    session: Session,
+    metric: MetricDefinition,
+    date_from: date | None,
+    date_to: date | None,
+) -> OrganizationComparison:
+    units = list(
+        session.scalars(
+            select(Measurement.organizational_unit)
+            .where(Measurement.metric_key == metric.key)
+            .distinct()
+            .order_by(Measurement.organizational_unit)
+        )
+    )
+    entries = [
+        summary
+        for unit in units
+        if (summary := get_summary(session, metric, unit, date_from, date_to)) is not None
+    ]
+    return OrganizationComparison(
+        metric_key=metric.key,
+        display_name=metric.display_name,
+        unit=metric.unit,
+        entries=entries,
     )

@@ -135,6 +135,39 @@ def test_dashboard_exposes_filters_summaries_and_sources(client: TestClient) -> 
     assert len(dashboard.json()["summaries"]) == 2
 
 
+def test_measurement_trend_and_organization_comparison(client: TestClient) -> None:
+    second_unit = VALID_CSV.replace("Service Nord", "Service Süd").replace(",110,100", ",80,100")
+    client.post("/api/v1/imports/csv", files={"file": ("north.csv", VALID_CSV, "text/csv")})
+    client.post("/api/v1/imports/csv", files={"file": ("south.csv", second_unit, "text/csv")})
+
+    trend = client.get(
+        "/api/v1/metrics/handled_cases/measurements",
+        params={
+            "organizational_unit": "Service Nord",
+            "date_from": "2026-07-01",
+            "date_to": "2026-07-14",
+        },
+    )
+    comparison = client.get(
+        "/api/v1/metrics/handled_cases/comparison",
+        params={"date_from": "2026-07-01", "date_to": "2026-07-14"},
+    )
+
+    assert trend.status_code == 200
+    assert [item["value"] for item in trend.json()] == ["110.0000", "95.0000"]
+    assert comparison.status_code == 200
+    assert [item["organizational_unit"] for item in comparison.json()["entries"]] == [
+        "Service Nord",
+        "Service Süd",
+    ]
+    assert [item["value"] for item in comparison.json()["entries"]] == ["205.00", "175.00"]
+
+
+def test_comparison_rejects_unknown_metric(client: TestClient) -> None:
+    response = client.get("/api/v1/metrics/unknown/comparison")
+    assert response.status_code == 404
+
+
 def test_xlsx_import_uses_the_same_validated_pipeline(client: TestClient) -> None:
     workbook = Workbook()
     sheet = workbook.active

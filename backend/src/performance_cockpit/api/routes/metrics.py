@@ -13,8 +13,10 @@ from performance_cockpit.schemas import (
     MeasurementRead,
     MetricDefinitionRead,
     MetricSummary,
+    OrganizationComparison,
 )
 from performance_cockpit.services.metrics import (
+    get_comparison,
     get_dashboard,
     get_dashboard_filters,
     get_summary,
@@ -59,6 +61,19 @@ def list_measurements(
     return list(
         session.scalars(measurement_query(metric_key, organizational_unit, date_from, date_to))
     )
+
+
+@router.get("/{metric_key}/comparison", response_model=OrganizationComparison)
+def read_comparison(
+    metric_key: str,
+    session: DatabaseSession,
+    date_from: date | None = None,
+    date_to: date | None = None,
+) -> OrganizationComparison:
+    metric = session.get(MetricDefinition, metric_key)
+    if metric is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Metric not found")
+    return get_comparison(session, metric, date_from, date_to)
 
 
 @router.get("/{metric_key}/summary", response_model=MetricSummary)

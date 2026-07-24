@@ -55,6 +55,15 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 - Schema-Migrationen für bestehende lokale Datenbanken
 - Aktualisiertes portables Windows-ZIP-Paket
 
+## Release 0.6 – Analyse und Drilldown
+
+**Status:** abgeschlossen
+
+- Zeitverlauf einer ausgewählten Kennzahl
+- Vergleich aller Organisationseinheiten
+- Kennzahl-Drilldown mit Zeitraumfilter
+- Lokale Visualisierung ohne externe Bibliotheken oder Webzugriffe
+
 ## Release 1.0 – Produktiver Start
 
 **Status:** geplant

@@ -82,6 +82,28 @@ function successfulFetch() {
     const url = String(input);
     if (url.includes("/metrics/dashboard/filters")) return jsonResponse(filters);
     if (url.includes("/metrics/dashboard?")) return jsonResponse(dashboard);
+    if (url.includes("/measurements?")) {
+      return jsonResponse([
+        {
+          id: 1,
+          metric_key: "handled_cases",
+          organizational_unit: "Service Nord",
+          period_start: "2026-07-01",
+          period_end: "2026-07-07",
+          value: "110",
+          target_value: "100",
+          source: "report.xlsx",
+        },
+      ]);
+    }
+    if (url.includes("/comparison?")) {
+      return jsonResponse({
+        metric_key: "handled_cases",
+        display_name: "Bearbeitete Vorgänge",
+        unit: "Anzahl",
+        entries: [{ ...dashboard.summaries[0], organizational_unit: "Service Nord" }],
+      });
+    }
     if (url.includes("/data/imports")) return jsonResponse(history);
     if (url.includes("/imports/file")) {
       return jsonResponse({ status: "completed", imported_rows: 8, failed_rows: 0 });
@@ -106,12 +128,22 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: "Leistung auf einen Blick." })).toBeInTheDocument();
-    expect(await screen.findByText("Bearbeitete Vorgänge")).toBeInTheDocument();
-    expect(screen.getByText("Qualitätsquote")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Qualitätsquote", level: 3 })).toBeInTheDocument();
     expect(screen.getByText("ohne Ziel")).toBeInTheDocument();
     expect(screen.getByText("Mit Hinweisen")).toBeInTheDocument();
     expect(screen.getByText("Erfolgreich")).toBeInTheDocument();
     expect(screen.getByText("Fehlgeschlagen")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Entwicklung und Vergleich" })).toBeInTheDocument();
+    expect(screen.getByText("Zeitverlauf · Service Nord")).toBeInTheDocument();
+    await userEvent.selectOptions(screen.getByLabelText("Kennzahl"), "quality");
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining("/metrics/quality/measurements?"),
+      ),
+    );
     await userEvent.click(screen.getAllByText("Fehler anzeigen")[0]);
     expect(screen.getByText(/Zeile 4 · value/)).toBeInTheDocument();
 
@@ -119,7 +151,7 @@ describe("App", () => {
     fireEvent.change(screen.getByLabelText("Von"), { target: { value: "" } });
     await userEvent.click(screen.getByRole("button", { name: "Anwenden" }));
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenLastCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining("organizational_unit=Service+S%C3%BCd"),
       ),
     );
@@ -129,7 +161,7 @@ describe("App", () => {
     const fetchMock = successfulFetch();
     vi.stubGlobal("fetch", fetchMock);
     const { container } = render(<App />);
-    await screen.findByText("Bearbeitete Vorgänge");
+    await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 });
 
     const input = container.querySelector('input[accept=".csv,.xlsx"]') as HTMLInputElement;
     fireEvent.change(input, {
@@ -159,7 +191,7 @@ describe("App", () => {
       .mockReturnValueOnce("delete")
       .mockReturnValueOnce("DELETE");
     const { container } = render(<App />);
-    await screen.findByText("Bearbeitete Vorgänge");
+    await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 });
 
     const restoreInput = container.querySelector('input[accept=".db"]') as HTMLInputElement;
     fireEvent.change(restoreInput, {
@@ -184,7 +216,9 @@ describe("App", () => {
       await screen.findByText("Daten konnten nicht geladen werden. Bitte Anwendung neu starten."),
     ).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Erneut versuchen" }));
-    expect(await screen.findByText("Bearbeitete Vorgänge")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 }),
+    ).toBeInTheDocument();
   });
 
   it("handles a completely empty local database", async () => {
@@ -224,7 +258,7 @@ describe("App", () => {
     vi.stubGlobal("fetch", fetchMock);
     vi.spyOn(window, "prompt").mockReturnValue("DELETE");
     const { container } = render(<App />);
-    await screen.findByText("Bearbeitete Vorgänge");
+    await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 });
 
     fireEvent.change(container.querySelector('input[accept=".csv,.xlsx"]') as HTMLInputElement, {
       target: { files: [new File(["bad"], "bad.csv")] },
@@ -244,5 +278,57 @@ describe("App", () => {
     expect(
       await screen.findByText("Die lokalen Daten konnten nicht zurückgesetzt werden."),
     ).toBeInTheDocument();
+  });
+
+  it("reports a failed drilldown request", async () => {
+    const fetchMock = successfulFetch();
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+    await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 });
+
+    fetchMock.mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/metrics/quality/")) return jsonResponse({}, false);
+      return successfulFetch()(input);
+    });
+    await userEvent.selectOptions(screen.getByLabelText("Kennzahl"), "quality");
+
+    expect(
+      await screen.findByText("Kennzahlanalyse konnte nicht geladen werden."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows an empty trend without failing the dashboard", async () => {
+    const fetchMock = successfulFetch();
+    fetchMock.mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/measurements?")) return jsonResponse([]);
+      if (url.includes("/comparison?")) {
+        return jsonResponse({
+          metric_key: "handled_cases",
+          display_name: "Bearbeitete Vorgänge",
+          unit: "Anzahl",
+          entries: [],
+        });
+      }
+      return successfulFetch()(input);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+
+    expect(await screen.findByText("Keine Werte im gewählten Zeitraum.")).toBeInTheDocument();
+  });
+
+  it("allows cancelling destructive and file actions", async () => {
+    vi.stubGlobal("fetch", successfulFetch());
+    vi.spyOn(window, "prompt").mockReturnValue(null);
+    const { container } = render(<App />);
+    await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 });
+
+    await userEvent.click(screen.getByRole("button", { name: "Lokal zurücksetzen" }));
+    fireEvent.change(container.querySelector('input[accept=".db"]') as HTMLInputElement, {
+      target: { files: [] },
+    });
+    expect(screen.queryByText("Alle lokalen Daten wurden gelöscht.")).not.toBeInTheDocument();
   });
 });

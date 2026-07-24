@@ -1,4 +1,4 @@
-Performance Cockpit v0.5 – Windows
+Performance Cockpit v0.6 – Windows
 
 Start:
 1. ZIP-Datei vollständig entpacken.

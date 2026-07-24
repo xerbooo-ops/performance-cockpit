@@ -9,6 +9,7 @@ type MetricSummary = {
   deviation: string | null;
   attainment_percent: string | null;
   measurement_count: number;
+  organizational_unit?: string;
 };
 
 type DashboardData = {
@@ -47,6 +48,24 @@ type ImportRecord = {
   failed_rows: number;
   created_at: string;
   errors: ImportError[];
+};
+
+type Measurement = {
+  id: number;
+  metric_key: string;
+  organizational_unit: string;
+  period_start: string;
+  period_end: string;
+  value: string;
+  target_value: string | null;
+  source: string;
+};
+
+type OrganizationComparison = {
+  metric_key: string;
+  display_name: string;
+  unit: string;
+  entries: MetricSummary[];
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
@@ -101,6 +120,42 @@ const demoHistory: ImportRecord[] = [
   },
 ];
 
+const demoMeasurements: Measurement[] = [
+  {
+    id: 1,
+    metric_key: "handled_cases",
+    organizational_unit: "Service Nord",
+    period_start: "2026-07-01",
+    period_end: "2026-07-07",
+    value: "110",
+    target_value: "100",
+    source: "sample_kpi_measurements.csv",
+  },
+  {
+    id: 2,
+    metric_key: "handled_cases",
+    organizational_unit: "Service Nord",
+    period_start: "2026-07-08",
+    period_end: "2026-07-14",
+    value: "95",
+    target_value: "100",
+    source: "sample_kpi_measurements.csv",
+  },
+];
+
+const demoComparison: OrganizationComparison = {
+  metric_key: "handled_cases",
+  display_name: "Bearbeitete Vorgänge",
+  unit: "Anzahl",
+  entries: [
+    demoDashboard.summaries[0],
+    { ...demoDashboard.summaries[0], value: "175", attainment_percent: "87.50" },
+  ].map((entry, index) => ({
+    ...entry,
+    organizational_unit: index === 0 ? "Service Nord" : "Service Süd",
+  })) as MetricSummary[],
+};
+
 function formatNumber(value: string, unit: string) {
   return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 }).format(Number(value))} ${
     unit === "Prozent" ? "%" : unit
@@ -123,32 +178,73 @@ function App() {
   const [importMessage, setImportMessage] = useState("");
   const [importing, setImporting] = useState(false);
   const [managing, setManaging] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState("");
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [comparison, setComparison] = useState<OrganizationComparison | null>(null);
 
-  const loadDashboard = useCallback(async (selectedUnit: string, from: string, to: string) => {
-    if (!selectedUnit) {
-      setDashboard(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      if (DEMO_MODE) {
-        setDashboard({ ...demoDashboard, organizational_unit: selectedUnit });
+  const loadAnalytics = useCallback(
+    async (metricKey: string, selectedUnit: string, from: string, to: string) => {
+      setSelectedMetric(metricKey);
+      if (!metricKey || !selectedUnit) {
+        setMeasurements([]);
+        setComparison(null);
         return;
       }
-      const params = new URLSearchParams({ organizational_unit: selectedUnit });
+      if (DEMO_MODE) {
+        setMeasurements(demoMeasurements);
+        setComparison(demoComparison);
+        return;
+      }
+      const params = new URLSearchParams();
       if (from) params.set("date_from", from);
       if (to) params.set("date_to", to);
-      const response = await fetch(`${API_BASE}/metrics/dashboard?${params}`);
-      if (!response.ok) throw new Error("Dashboard konnte nicht geladen werden.");
-      setDashboard((await response.json()) as DashboardData);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unbekannter Fehler");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      const trendParams = new URLSearchParams(params);
+      trendParams.set("organizational_unit", selectedUnit);
+      const [trendResponse, comparisonResponse] = await Promise.all([
+        fetch(`${API_BASE}/metrics/${metricKey}/measurements?${trendParams}`),
+        fetch(`${API_BASE}/metrics/${metricKey}/comparison?${params}`),
+      ]);
+      if (!trendResponse.ok || !comparisonResponse.ok) {
+        throw new Error("Kennzahlanalyse konnte nicht geladen werden.");
+      }
+      setMeasurements((await trendResponse.json()) as Measurement[]);
+      setComparison((await comparisonResponse.json()) as OrganizationComparison);
+    },
+    [],
+  );
+
+  const loadDashboard = useCallback(
+    async (selectedUnit: string, from: string, to: string) => {
+      if (!selectedUnit) {
+        setDashboard(null);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError("");
+      try {
+        if (DEMO_MODE) {
+          setDashboard({ ...demoDashboard, organizational_unit: selectedUnit });
+          await loadAnalytics(demoDashboard.summaries[0].metric_key, selectedUnit, from, to);
+          return;
+        }
+        const params = new URLSearchParams({ organizational_unit: selectedUnit });
+        if (from) params.set("date_from", from);
+        if (to) params.set("date_to", to);
+        const response = await fetch(`${API_BASE}/metrics/dashboard?${params}`);
+        if (!response.ok) throw new Error("Dashboard konnte nicht geladen werden.");
+        const data = (await response.json()) as DashboardData;
+        setDashboard(data);
+        const metricKey = data.summaries[0]?.metric_key ?? "";
+        await loadAnalytics(metricKey, selectedUnit, from, to);
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Unbekannter Fehler");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadAnalytics],
+  );
 
   const loadHistory = useCallback(async () => {
     if (DEMO_MODE) {
@@ -222,6 +318,16 @@ function App() {
     void loadDashboard(unit, dateFrom, dateTo);
   }
 
+  function changeMetric(metricKey: string) {
+    void loadAnalytics(metricKey, unit, dateFrom, dateTo).catch((analyticsError) => {
+      setError(
+        analyticsError instanceof Error
+          ? analyticsError.message
+          : "Kennzahlanalyse fehlgeschlagen.",
+      );
+    });
+  }
+
   function handleLocalDownload(event: MouseEvent<HTMLAnchorElement>) {
     if (!DEMO_MODE) return;
     event.preventDefault();
@@ -292,7 +398,7 @@ function App() {
           <span className="brand-mark">PC</span>
           <div>
             <strong>Performance Cockpit</strong>
-            <span>Release 0.5 · lokale Datenkontrolle</span>
+            <span>Release 0.6 · Analyse und Drilldown</span>
           </div>
         </div>
         <label className={`import-button ${importing ? "disabled" : ""}`}>
@@ -427,6 +533,83 @@ function App() {
             <span>Quelle: {dashboard.source_files.join(", ") || "keine"}</span>
           </footer>
         )}
+
+        {dashboard?.summaries.length ? (
+          <section className="analytics-section" aria-labelledby="analytics-heading">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Drilldown</p>
+                <h2 id="analytics-heading">Entwicklung und Vergleich</h2>
+              </div>
+              <label className="metric-picker">
+                Kennzahl
+                <select
+                  value={selectedMetric}
+                  onChange={(event) => changeMetric(event.target.value)}
+                >
+                  {dashboard.summaries.map((metric) => (
+                    <option value={metric.metric_key} key={metric.metric_key}>
+                      {metric.display_name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="analytics-grid">
+              <article className="analytics-card">
+                <h3>Zeitverlauf · {unit}</h3>
+                {measurements.length ? (
+                  <div className="trend-chart" role="img" aria-label="Zeitverlauf der Messwerte">
+                    {measurements.map((item) => {
+                      const maximum = Math.max(
+                        ...measurements.map((point) => Number(point.value)),
+                        1,
+                      );
+                      return (
+                        <div className="trend-column" key={item.id}>
+                          <span
+                            className="trend-bar"
+                            style={{
+                              height: `${Math.max((Number(item.value) / maximum) * 100, 4)}%`,
+                            }}
+                          />
+                          <strong>
+                            {new Intl.NumberFormat("de-DE").format(Number(item.value))}
+                          </strong>
+                          <small>{formatDate(item.period_end)}</small>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="analytics-empty">Keine Werte im gewählten Zeitraum.</p>
+                )}
+              </article>
+              <article className="analytics-card">
+                <h3>Organisationseinheiten</h3>
+                <div className="comparison-list">
+                  {(comparison?.entries ?? []).map((entry) => {
+                    const maximum = Math.max(
+                      ...(comparison?.entries ?? []).map((item) => Number(item.value)),
+                      1,
+                    );
+                    return (
+                      <div className="comparison-row" key={entry.organizational_unit}>
+                        <div>
+                          <strong>{entry.organizational_unit ?? "Unbekannt"}</strong>
+                          <span>{formatNumber(entry.value, comparison?.unit ?? "")}</span>
+                        </div>
+                        <div className="comparison-track">
+                          <span style={{ width: `${(Number(entry.value) / maximum) * 100}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </article>
+            </div>
+          </section>
+        ) : null}
 
         <section className="management-section" aria-labelledby="management-heading">
           <div className="section-heading">
