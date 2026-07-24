@@ -16,12 +16,17 @@ dist/
 build/
 out/
 coverage/
+htmlcov/
+.coverage
+*.egg-info/
+*.tsbuildinfo
 *.log
 
-# Runtime and caches
+# Runtime, test and tool caches
 .cache/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 __pycache__/
 *.py[cod]
 *.pid
@@ -38,3 +43,6 @@ Thumbs.db
 # Local data
 data/*
 !data/.gitkeep
+
+# Docker volumes
+postgres_data/

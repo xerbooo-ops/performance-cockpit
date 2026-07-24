@@ -1,0 +1,43 @@
+name: performance-cockpit
+
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-performance_cockpit}
+      POSTGRES_USER: ${POSTGRES_USER:-performance_cockpit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-locally}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-performance_cockpit} -d ${POSTGRES_DB:-performance_cockpit}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      PERFORMANCE_COCKPIT_DATABASE_URL: ${PERFORMANCE_COCKPIT_DATABASE_URL:-postgresql+psycopg://performance_cockpit:change-me-locally@database:5432/performance_cockpit}
+      PERFORMANCE_COCKPIT_LOG_LEVEL: ${PERFORMANCE_COCKPIT_LOG_LEVEL:-INFO}
+      PERFORMANCE_COCKPIT_CORS_ORIGINS: '${PERFORMANCE_COCKPIT_CORS_ORIGINS:-["http://localhost:5173"]}'
+    ports:
+      - "8000:8000"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api/v1}
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  postgres_data:

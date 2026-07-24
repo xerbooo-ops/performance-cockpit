@@ -2,43 +2,103 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 0.1 schafft die initiale Projektstruktur. Fachliche Funktionen und die konkrete Technologieauswahl folgen in späteren Releases.
+> **Projektstatus:** Release 0.2 stellt das technische Fundament mit React, FastAPI, PostgreSQL, Docker Compose, Tests und Continuous Integration bereit.
 
-## Ziele
+## Technischer Stack
 
-- Kennzahlen aus unterschiedlichen Quellen zentral zusammenführen
-- Daten automatisiert validieren und aufbereiten
-- Entwicklungen, Zielerreichung und Abweichungen verständlich visualisieren
-- Eine wartbare Grundlage für zukünftige Integrationen und Erweiterungen schaffen
+| Bereich | Technologie |
+| --- | --- |
+| Frontend | React 19, TypeScript 6 und Vite 8 |
+| Backend | Python 3.12+ und FastAPI |
+| Datenbank | PostgreSQL 17 |
+| Tests | Vitest, Testing Library und pytest |
+| Qualität | ESLint, Prettier und Ruff |
+| Lokaler Betrieb | Docker Compose |
+| CI | GitHub Actions |
 
 ## Projektstruktur
 
 | Pfad | Zweck |
 | --- | --- |
-| `frontend/` | Benutzeroberfläche und Visualisierung |
-| `backend/` | API, Geschäftslogik und Datenverarbeitung |
-| `data/` | Lokale Beispieldaten; produktive und sensible Daten werden nicht versioniert |
-| `docs/` | Architektur, Roadmap und weitere Projektdokumentation |
+| `frontend/` | React-Anwendung, UI-Tests und Frontend-Konfiguration |
+| `backend/` | FastAPI-Anwendung, Konfiguration, Logging und API-Tests |
+| `data/` | Freigegebene Beispieldaten; produktive und sensible Daten werden nicht versioniert |
+| `docs/` | Architektur, ADRs, Anforderungen und Roadmap |
 | `scripts/` | Hilfs-, Entwicklungs- und Automatisierungsskripte |
+
+## Schnellstart mit Docker
+
+Voraussetzung ist eine aktuelle Docker-Installation mit Docker Compose.
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Anschließend sind erreichbar:
+
+- Frontend: <http://localhost:5173>
+- Backend: <http://localhost:8000>
+- API-Dokumentation: <http://localhost:8000/docs>
+- Health-Endpunkt: <http://localhost:8000/api/v1/health>
+
+Beenden:
+
+```bash
+docker compose down
+```
+
+## Entwicklung ohne Docker
+
+### Backend
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+uvicorn performance_cockpit.main:app --reload
+```
+
+Qualitätsprüfungen:
+
+```bash
+ruff check .
+ruff format --check .
+pytest
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Qualitätsprüfungen:
+
+```bash
+npm run lint
+npm run format:check
+npm run typecheck
+npm run test
+npm run build
+```
+
+## Konfiguration
+
+Die Anwendung wird über Umgebungsvariablen konfiguriert. `.env.example` enthält ausschließlich sichere Beispielwerte. Lokale `.env`-Dateien, Zugangsdaten und sensible Daten dürfen nicht eingecheckt werden.
+
+Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen, die im Browser verfügbar sein dürfen, tragen das Präfix `VITE_`.
 
 ## Dokumentation
 
 - [Architektur](docs/architecture.md)
+- [Anforderungen und Kennzahlen](docs/requirements.md)
 - [Roadmap](docs/roadmap.md)
-
-## Lokale Entwicklung
-
-Die konkreten Installations-, Start- und Testbefehle werden ergänzt, sobald der technische Stack für Frontend und Backend festgelegt ist.
-
-Allgemeiner Ablauf:
-
-1. Repository klonen.
-2. Abhängigkeiten für Frontend und Backend installieren.
-3. Lokale Konfiguration über Umgebungsvariablen anlegen.
-4. Backend und Frontend im Entwicklungsmodus starten.
-5. Tests und Qualitätsprüfungen ausführen.
-
-Lokale Konfigurationsdateien, Zugangsdaten und sensible Daten dürfen nicht in das Repository eingecheckt werden.
+- [Architecture Decision Records](docs/adr/)
 
 ## Entwicklungsprinzipien
 
@@ -50,8 +110,8 @@ Lokale Konfigurationsdateien, Zugangsdaten und sensible Daten dürfen nicht in d
 
 ## Mitwirken
 
-Änderungen sollten auf einem eigenen Branch entwickelt, geprüft und über einen Pull Request eingebracht werden. Architekturentscheidungen und neue Kennzahlen sind in `docs/` zu dokumentieren.
+Änderungen sollten auf einem eigenen Branch entwickelt, geprüft und über einen Pull Request eingebracht werden. Architekturentscheidungen und neue Kennzahlen sind gemeinsam mit der Implementierung zu dokumentieren.
 
 ## Version
 
-Aktueller Projektstand: **0.1**
+Aktueller Projektstand: **0.2**

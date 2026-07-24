@@ -6,24 +6,27 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 
 **Status:** abgeschlossen
 
-- Grundlegende Verzeichnisstruktur anlegen
-- README und allgemeine Repository-Regeln erstellen
-- Architekturziel und Verantwortungsgrenzen dokumentieren
-- Erste Entwicklungsroadmap festhalten
-- Lokale Daten, Geheimnisse und Build-Artefakte vom Versionsstand ausschließen
+- Grundlegende Verzeichnisstruktur
+- README, `.gitignore`, Architektur und Roadmap
 
 ## Release 0.2 – Technisches Fundament
 
-- Fachliche Kernanforderungen und erste Kennzahlen priorisieren
-- Technologieentscheidungen als Architecture Decision Records dokumentieren
-- Frontend- und Backend-Projekte initialisieren
-- Konfigurations- und Logging-Konzept umsetzen
-- Linting, Formatierung und automatisierte Tests einrichten
-- Continuous Integration für Builds und Tests ergänzen
+**Status:** abgeschlossen
+
+- Fachliche Kernanforderungen und erste Kennzahlen priorisiert
+- Technologieentscheidungen als Architecture Decision Records dokumentiert
+- React-Frontend und FastAPI-Backend initialisiert
+- PostgreSQL und Docker Compose vorbereitet
+- Typisierte Konfiguration und strukturierte Logs umgesetzt
+- Linting, Formatierung und automatisierte Tests eingerichtet
+- Continuous Integration für Prüfungen und Builds ergänzt
 
 ## Release 0.3 – Datenbasis und API
 
+**Status:** geplant
+
 - Erstes Datenmodell definieren
+- Datenbankmigrationen einführen
 - Import für eine priorisierte Datenquelle implementieren
 - Datenvalidierung und verständliche Fehlerberichte ergänzen
 - Versionierte API für Kennzahlen bereitstellen
@@ -31,6 +34,8 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 - Tests für Import und Kennzahlberechnung erstellen
 
 ## Release 0.4 – Cockpit MVP
+
+**Status:** geplant
 
 - Dashboard-Grundlayout umsetzen
 - Kernkennzahlen, Filter und Zeiträume darstellen
@@ -40,6 +45,8 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 
 ## Release 0.5 – Sicherheit und Betrieb
 
+**Status:** geplant
+
 - Authentifizierung und rollenbasierte Berechtigungen umsetzen
 - Datenschutz- und Aufbewahrungskonzept dokumentieren
 - Monitoring, strukturierte Logs und Alarmierung ergänzen
@@ -47,6 +54,8 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 - Deployment für eine Testumgebung automatisieren
 
 ## Release 1.0 – Produktiver Start
+
+**Status:** geplant
 
 - Abnahmekriterien und nichtfunktionale Anforderungen erfüllen
 - Barrierefreiheit, Performance und Sicherheit prüfen
