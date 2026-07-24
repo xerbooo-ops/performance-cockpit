@@ -22,7 +22,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: |
-          npm ci
+          npm ci --include=dev
           npm run build
       - uses: actions/setup-python@v5
         with:
