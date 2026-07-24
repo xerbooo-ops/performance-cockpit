@@ -58,13 +58,23 @@ jobs:
       - name: Package release
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v0.7" -Force
-          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v0.7/"
-          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v0.7/"
-          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v0.7/README.txt"
-          Compress-Archive -Path "release/PerformanceCockpit_v0.7" -DestinationPath "release/PerformanceCockpit_v0.7_Windows.zip"
+          New-Item -ItemType Directory -Path "release/PerformanceCockpit_v1.0" -Force
+          Copy-Item "backend/dist/PerformanceCockpit.exe" "release/PerformanceCockpit_v1.0/"
+          Copy-Item "data/sample_kpi_measurements.csv" "release/PerformanceCockpit_v1.0/"
+          Copy-Item "docs/windows-standalone.md" "release/PerformanceCockpit_v1.0/README.txt"
+          Compress-Archive -Path "release/PerformanceCockpit_v1.0" -DestinationPath "release/PerformanceCockpit_v1.0_Windows.zip"
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress -y
+          }
+          & $iscc "scripts/windows-installer.iss"
       - uses: actions/upload-artifact@v4
         with:
-          name: PerformanceCockpit-v0.7-Windows
-          path: release/PerformanceCockpit_v0.7_Windows.zip
+          name: PerformanceCockpit-v1.0-Windows
+          path: |
+            release/PerformanceCockpit_v1.0_Windows.zip
+            release/PerformanceCockpit_v1.0_Setup.exe
           if-no-files-found: error

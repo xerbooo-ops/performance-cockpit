@@ -75,14 +75,17 @@ Die Roadmap beschreibt die geplante Entwicklung des Performance Cockpits. Inhalt
 
 ## Release 1.0 – Produktiver Start
 
-**Status:** geplant
+**Status:** abgeschlossen
 
-- Abnahmekriterien und nichtfunktionale Anforderungen erfüllen
-- Barrierefreiheit, Performance und Sicherheit prüfen
-- Betriebs- und Supportdokumentation abschließen
-- Pilotbetrieb auf Windows 10/11 durchführen und Erkenntnisse einarbeiten
-- Signierten Windows-Installer ergänzen
-- Produktionsfreigabe und Release-Prozess etablieren
+- Sicherheitsheader, Tastaturfokus und reduzierte Bewegung
+- Lokale Systemdiagnose ohne Telemetrie oder Dateninhalte
+- Supportdokumentation und reproduzierbare Release-Checkliste
+- Portables ZIP und installierbares Windows-Setup
+- Automatisierter Start- und Health-Check des Windows-Builds
+- Weiterhin vollständig lokaler Betrieb ohne Laufzeitinstallationen
+
+Vor einer breiten organisatorischen Verteilung bleiben ein Pilot auf den konkret eingesetzten
+Windows-10-/11-Systemen und – sobald ein Zertifikat vorliegt – die digitale Signatur empfohlen.
 
 ## Übergreifende Leitlinien
 

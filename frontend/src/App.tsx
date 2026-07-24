@@ -393,12 +393,15 @@ function App() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        Zum Inhalt springen
+      </a>
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark">PC</span>
           <div>
             <strong>Performance Cockpit</strong>
-            <span>Release 0.7 · Berichte und Export</span>
+            <span>Release 1.0 · lokale Standalone-Version</span>
           </div>
         </div>
         <label className={`import-button ${importing ? "disabled" : ""}`}>
@@ -407,7 +410,7 @@ function App() {
         </label>
       </header>
 
-      <main>
+      <main id="main-content">
         <section className="hero">
           <div>
             <p className="eyebrow">Cockpit MVP</p>
@@ -448,7 +451,11 @@ function App() {
           </button>
         </section>
 
-        {importMessage && <p className="notice success">{importMessage}</p>}
+        {importMessage && (
+          <p className="notice success" aria-live="polite">
+            {importMessage}
+          </p>
+        )}
         {error && (
           <div className="notice error" role="alert">
             <span>{error}</span>

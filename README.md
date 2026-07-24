@@ -2,7 +2,7 @@
 
 Performance Cockpit ist ein Projekt zur zentralen Erfassung, Aufbereitung und Darstellung relevanter Leistungskennzahlen. Ziel ist ein übersichtliches Cockpit, das operative und strategische Entscheidungen durch konsistente, nachvollziehbare Daten unterstützt.
 
-> **Projektstatus:** Release 0.7 ergänzt formatierte Excel-Exporte und lokale PDF-Berichte.
+> **Projektstatus:** Release 1.0 ist als vollständig lokale Windows-Standalone-Anwendung mit portablem ZIP und Installer verfügbar.
 
 ## Öffentliche Vorschau
 
@@ -10,7 +10,7 @@ Das Frontend wird bei Änderungen an `main` automatisch über GitHub Pages verö
 
 <https://xerbooo-ops.github.io/performance-cockpit/>
 
-Die Vorschau zeigt Release 0.7 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
+Die Vorschau zeigt Release 1.0 mit Demodaten. Datenimport und Speicherung erfolgen ausschließlich in
 der lokalen Windows-Anwendung.
 
 ## Technischer Stack
@@ -39,8 +39,8 @@ der lokalen Windows-Anwendung.
 ## Windows ohne Installation
 
 Der GitHub-Actions-Workflow `Build Windows standalone` erzeugt
-`PerformanceCockpit_v0.7_Windows.zip`. Nach dem Entpacken startet
-`PerformanceCockpit.exe` das Cockpit per Doppelklick.
+`PerformanceCockpit_v1.0_Windows.zip` sowie `PerformanceCockpit_v1.0_Setup.exe`. Das portable Paket
+wird entpackt; anschließend startet `PerformanceCockpit.exe` das Cockpit per Doppelklick.
 
 Zur Laufzeit werden kein Docker, Python, Node.js, PostgreSQL, Internetzugang, Cloud-Dienst oder
 externe API benötigt. Die Daten bleiben unter `%LOCALAPPDATA%\PerformanceCockpit` auf dem Gerät.
@@ -147,7 +147,14 @@ Backend-Variablen tragen das Präfix `PERFORMANCE_COCKPIT_`. Frontend-Variablen,
 
 ## Version
 
-Aktueller Projektstand: **0.7**
+Aktueller Projektstand: **1.0**
+
+## Kurz-Changelog 1.0
+
+- lokaler Windows-Installer zusätzlich zum portablen ZIP
+- Systemdiagnose ohne Telemetrie oder sensible Daten
+- Sicherheitsheader und verbesserte Tastaturbedienung
+- Support- und Release-Dokumentation
 
 ## Kurz-Changelog 0.7
 

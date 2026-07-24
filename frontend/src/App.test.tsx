@@ -128,6 +128,10 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: "Leistung auf einen Blick." })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Zum Inhalt springen" })).toHaveAttribute(
+      "href",
+      "#main-content",
+    );
     expect(
       await screen.findByRole("heading", { name: "Bearbeitete Vorgänge", level: 3 }),
     ).toBeInTheDocument();

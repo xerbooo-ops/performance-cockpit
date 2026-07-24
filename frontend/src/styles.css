@@ -30,6 +30,27 @@ select {
   font: inherit;
 }
 
+:focus-visible {
+  outline: 3px solid #d58a16;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 10;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.6rem;
+  color: #fff;
+  background: #172033;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 button,
 .import-button,
 .text-action,
@@ -724,5 +745,16 @@ dd {
 
   .history-status {
     justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
